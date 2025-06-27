@@ -1,6 +1,11 @@
 import { useGLTF } from '@react-three/drei';
 import type { ObjectMap } from '@react-three/fiber';
-import type { Mesh, MeshPhysicalMaterial, MeshStandardMaterial } from 'three';
+import type {
+	Group,
+	Mesh,
+	MeshPhysicalMaterial,
+	MeshStandardMaterial,
+} from 'three';
 import type { GLTF } from 'three-stdlib';
 
 type GLTFResult = GLTF & {
@@ -17,7 +22,7 @@ type GLTFResult = GLTF & {
 		Circle001002: Mesh;
 		D: Mesh;
 		P: Mesh;
-		Scene: Mesh;
+		Scene: Group;
 		p地面: Mesh;
 		yellow: Mesh;
 		人行道右边: Mesh;
@@ -36,17 +41,17 @@ type GLTFResult = GLTF & {
 		杆: Mesh;
 		杆_1: Mesh;
 		杆_2: Mesh;
-		杠: Mesh;
-		柱体: Mesh;
-		柱体001: Mesh;
+		杠: Group;
+		柱体: Group;
+		柱体001: Group;
 		柱体001_1: Mesh;
 		柱体001_2: Mesh;
-		柱体002: Mesh;
+		柱体002: Group;
 		柱体002_1: Mesh;
 		柱体002_2: Mesh;
 		柱体_1: Mesh;
 		柱体_2: Mesh;
-		树苗: Mesh;
+		树苗: Group;
 		树苗002: Mesh;
 		树苗002_1: Mesh;
 		玻璃: Mesh;

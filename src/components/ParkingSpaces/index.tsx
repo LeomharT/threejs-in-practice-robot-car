@@ -1,10 +1,10 @@
 import medium from '@pmndrs/assets/fonts/inter_medium.woff';
 import type { RoundedBoxGeometryProps } from '@react-three/drei';
 import { Text, useGLTF } from '@react-three/drei';
-import { extend, type EventHandlers } from '@react-three/fiber';
+import { extend } from '@react-three/fiber';
 import { geometry } from 'maath';
-import { useState } from 'react';
-import { Color, Mesh } from 'three';
+import { useState, type JSX } from 'react';
+import { Color } from 'three';
 
 declare module '@react-three/fiber' {
 	interface ThreeElements {
@@ -28,13 +28,25 @@ export default function ParkingSpaces() {
 				<ParkingSpace text='1' />
 				<ParkingSpace text='2' position-x={-2.6} />
 				<ParkingSpace text='3' position-x={-10.2} />
+				<ParkingSpace
+					text='4'
+					position-x={-53.9}
+					position-y={-10.7}
+					rotation-z={-Math.PI / 2}
+				/>
+				<ParkingSpace
+					text='5'
+					position-x={-53.9}
+					position-y={-13.3}
+					rotation-z={-Math.PI / 2}
+				/>
 			</group>
 		</>
 	);
 }
 
 function ParkingSpace(
-	props: Partial<Mesh & EventHandlers> & { text?: string }
+	props: JSX.IntrinsicElements['group'] & { text?: string }
 ) {
 	const [color, setColor] = useState(new Color(BLUE_4));
 

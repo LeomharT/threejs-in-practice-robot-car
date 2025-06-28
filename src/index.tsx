@@ -1,5 +1,5 @@
 import { Leva } from 'leva';
-import { StrictMode } from 'react';
+import { Fragment } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './app/App';
 import './index.css';
@@ -7,7 +7,7 @@ import './index.css';
 const root = createRoot(document.querySelector('#root') as HTMLDivElement);
 
 root.render(
-	<StrictMode>
+	<Fragment>
 		<Leva
 			theme={{
 				sizes: {
@@ -18,5 +18,5 @@ root.render(
 			hidden={location.hash !== '#debug'}
 		/>
 		<App />
-	</StrictMode>
+	</Fragment>
 );

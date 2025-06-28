@@ -11,6 +11,7 @@ import {
 	LinearToneMapping,
 	NeutralToneMapping,
 	NoToneMapping,
+	PerspectiveCamera,
 	ReinhardToneMapping,
 } from 'three';
 
@@ -19,7 +20,7 @@ type ScenesProps = {
 };
 
 export default function Scenes(props: ScenesProps) {
-	const { scene, gl } = useThree();
+	const { camera, gl } = useThree();
 
 	const { toneMapping } = useControls('🎨 Renderer', {
 		toneMapping: {
@@ -70,16 +71,32 @@ export default function Scenes(props: ScenesProps) {
 			},
 		});
 
+	const { fov } = useControls('🎥 Camera', {
+		fov: {
+			min: 20,
+			max: 90,
+			step: 1,
+			value: 50,
+		},
+	});
+
 	useEffect(() => {
-		scene.environmentIntensity = environmentIntensity;
 		gl.toneMapping = toneMapping;
-	}, [scene, environmentIntensity, gl, toneMapping]);
+	}, [gl, toneMapping]);
+
+	useEffect(() => {
+		if (camera instanceof PerspectiveCamera) {
+			camera.fov = fov;
+			camera.updateProjectionMatrix();
+		}
+	}, [camera, fov]);
 
 	return (
 		<>
 			<Environment
 				background
 				backgroundBlurriness={backgroundBlurriness}
+				environmentIntensity={environmentIntensity}
 				preset={environment as keyof typeof presetsObj}
 			/>
 			{props.children}

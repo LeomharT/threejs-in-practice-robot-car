@@ -1,6 +1,10 @@
 import { useGLTF } from '@react-three/drei';
 import type { ObjectMap } from '@react-three/fiber';
+import gsap from 'gsap';
+import { button, folder, useControls } from 'leva';
+import { useRef, type JSX } from 'react';
 import {
+	Euler,
 	Mesh,
 	type Group,
 	type MeshPhysicalMaterial,
@@ -104,6 +108,46 @@ export default function CarMap() {
 	const { nodes, materials } = useGLTF(
 		'/src/assets/models/ros-car/ros-car-map.glb'
 	) as GLTFResult & ObjectMap;
+
+	const barrierRrm = useRef<JSX.IntrinsicElements['group']>(null);
+
+	const [{ rotationX }, set] = useControls('🗺️ Map', () => ({
+		'🚧 Barrier': folder({
+			Lift: button(() => {
+				ratateBarrierRrm(-Math.PI / 2);
+			}),
+			Down: button(() => {
+				ratateBarrierRrm(0);
+			}),
+			rotationX: {
+				min: 0,
+				max: Math.PI / 2,
+				step: 0.001,
+				value: 0,
+				label: 'Rotation Y',
+			},
+		}),
+	}));
+
+	function ratateBarrierRrm(deg: number = 0) {
+		if (!barrierRrm.current) throw new Error();
+		if (!(barrierRrm.current.rotation instanceof Euler)) return;
+
+		const animate = gsap.to(barrierRrm.current.rotation, {
+			x: deg,
+			ease: 'back.inOut',
+			duration: 1,
+			onUpdate: () => {
+				if (barrierRrm.current) {
+					set({ rotationX: -(barrierRrm.current.rotation as Euler).x });
+				}
+			},
+		});
+
+		animate.play();
+
+		console.log(animate);
+	}
 
 	return (
 		<group dispose={null}>
@@ -407,24 +451,31 @@ export default function CarMap() {
 				position={[-1.905, 0.587, 6.547]}
 				rotation={[-Math.PI, 0, -Math.PI]}
 			/>
-			<group position={[-1.879, 1.034, 6.553]} rotation={[-2.356, 0, Math.PI]}>
+			<group
+				ref={barrierRrm}
+				position={[-1.879, 1.034, 6.553]}
+				rotation={[-rotationX, 0, Math.PI]}
+			>
 				<mesh
 					castShadow
 					receiveShadow
 					geometry={nodes.杆.geometry}
 					material={materials.交通灯黑柱}
+					rotation-x={-Math.PI / 4 - Math.PI}
 				/>
 				<mesh
 					castShadow
 					receiveShadow
 					geometry={nodes.杆_1.geometry}
 					material={materials.红色}
+					rotation-x={-Math.PI / 4 - Math.PI}
 				/>
 				<mesh
 					castShadow
 					receiveShadow
 					geometry={nodes.杆_2.geometry}
 					material={materials.浅灰}
+					rotation-x={-Math.PI / 4 - Math.PI}
 				/>
 			</group>
 			<mesh

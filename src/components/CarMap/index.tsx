@@ -2,10 +2,11 @@ import { useGLTF } from '@react-three/drei';
 import type { ObjectMap } from '@react-three/fiber';
 import gsap from 'gsap';
 import { button, folder, useControls } from 'leva';
-import { useRef, type JSX } from 'react';
+import { useRef, useState, type JSX } from 'react';
 import {
 	Euler,
 	Mesh,
+	Vector3,
 	type Group,
 	type MeshPhysicalMaterial,
 	type MeshStandardMaterial,
@@ -112,6 +113,8 @@ export default function CarMap() {
 
 	const barrierRrm = useRef<JSX.IntrinsicElements['group']>(null);
 
+	const [borderPosition, setBorderPosition] = useState(new Vector3(0, -0.2, 0));
+
 	const [{ rotationX }, set] = useControls('🗺️ Map', () => ({
 		'🚧 Barrier': folder({
 			rotationX: {
@@ -146,6 +149,36 @@ export default function CarMap() {
 		});
 
 		animate.play();
+	}
+
+	function handleOnPointerEnter() {
+		document.body.style.cursor = 'pointer';
+
+		gsap
+			.to(borderPosition, {
+				y: 1.2,
+				ease: 'back.inOut(7)',
+				duration: 0.6,
+				onUpdate() {
+					setBorderPosition(borderPosition.clone());
+				},
+			})
+			.play();
+	}
+
+	function handleOnPointerOut() {
+		document.body.style.cursor = 'default';
+
+		gsap
+			.to(borderPosition, {
+				y: -0.2,
+				ease: 'back.inOut(5)',
+				duration: 0.8,
+				onUpdate() {
+					setBorderPosition(borderPosition.clone());
+				},
+			})
+			.play();
 	}
 
 	return (
@@ -295,6 +328,8 @@ export default function CarMap() {
 				position={[-2.055, 0.026, 3.694]}
 				rotation={[0, -1.571, 0]}
 				scale={[2.36, 1, 1.83]}
+				onPointerEnter={handleOnPointerEnter}
+				onPointerOut={handleOnPointerOut}
 			/>
 			<mesh
 				castShadow
@@ -305,6 +340,11 @@ export default function CarMap() {
 				rotation={[-Math.PI, 0, -Math.PI]}
 				scale={3.02}
 			/>
+			<BarrierBorder
+				position={[-2.07, borderPosition.y, 1.11]}
+				width={4}
+				height={5.05}
+			/>
 			<mesh
 				castShadow
 				receiveShadow
@@ -313,7 +353,6 @@ export default function CarMap() {
 				position={[-0.062, 0.025, -5.242]}
 				rotation={[0, -1.571, 0]}
 			/>
-			<BarrierBorder position-y={5.0} />
 			<group position={[-2.449, 5.63, -4.173]} rotation={[0, 0.329, 0]}>
 				<mesh
 					castShadow

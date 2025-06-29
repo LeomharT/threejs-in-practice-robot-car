@@ -27,12 +27,12 @@ void main()
     if(uv.y > 0.0 && uv.y < 0.1)
     {
         color += uColor;
-        alpha = 1.0;
+        alpha = 0.8;
     }
     if(uv.y > 0.9 && uv.y < 1.0)
     {
         color += uColor;
-        alpha = 1.0;
+        alpha = 0.8;
     }
 
     uv.x += uTime * 0.1;
@@ -46,7 +46,7 @@ void main()
     if(uv.x > 0.25 && uv.x < 0.70)
     {
         color = uColor;
-        alpha = 1.0;
+        alpha = 0.8;
     }
 
     gl_FragColor = vec4(color, alpha);

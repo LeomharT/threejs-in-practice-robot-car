@@ -153,7 +153,6 @@ export default function CarMap() {
 
 	function handleOnPointerEnter() {
 		document.body.style.cursor = 'pointer';
-
 		gsap
 			.to(borderPosition, {
 				y: 1.2,
@@ -168,7 +167,6 @@ export default function CarMap() {
 
 	function handleOnPointerOut() {
 		document.body.style.cursor = 'default';
-
 		gsap
 			.to(borderPosition, {
 				y: -0.2,
@@ -179,6 +177,28 @@ export default function CarMap() {
 				},
 			})
 			.play();
+	}
+
+	function handleOnParkingClick() {
+		const timeLine = gsap.timeline();
+		timeLine.to(borderPosition, {
+			y: -0.2,
+			duration: 0.14,
+			ease: 'power2.out',
+			onUpdate() {
+				setBorderPosition(borderPosition.clone());
+			},
+		});
+		timeLine.to(borderPosition, {
+			y: 1.2,
+			duration: 0.14,
+			ease: 'power2.out',
+			onUpdate() {
+				setBorderPosition(borderPosition.clone());
+			},
+		});
+
+		timeLine.play();
 	}
 
 	return (
@@ -330,6 +350,7 @@ export default function CarMap() {
 				scale={[2.36, 1, 1.83]}
 				onPointerEnter={handleOnPointerEnter}
 				onPointerOut={handleOnPointerOut}
+				onPointerDown={handleOnParkingClick}
 			/>
 			<mesh
 				castShadow

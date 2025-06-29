@@ -11,6 +11,7 @@ import {
 	type MeshStandardMaterial,
 } from 'three';
 import type { GLTF } from 'three-stdlib';
+import BarrierBorder from '../BarrierBorder';
 
 type GLTFResult = GLTF & {
 	nodes: {
@@ -113,12 +114,6 @@ export default function CarMap() {
 
 	const [{ rotationX }, set] = useControls('🗺️ Map', () => ({
 		'🚧 Barrier': folder({
-			Lift: button(() => {
-				ratateBarrierRrm(-Math.PI / 2);
-			}),
-			Down: button(() => {
-				ratateBarrierRrm(0);
-			}),
 			rotationX: {
 				min: 0,
 				max: Math.PI / 2,
@@ -126,6 +121,12 @@ export default function CarMap() {
 				value: 0,
 				label: 'Rotation Y',
 			},
+			Lift: button(() => {
+				ratateBarrierRrm(-Math.PI / 2);
+			}),
+			Down: button(() => {
+				ratateBarrierRrm(0);
+			}),
 		}),
 	}));
 
@@ -145,8 +146,6 @@ export default function CarMap() {
 		});
 
 		animate.play();
-
-		console.log(animate);
 	}
 
 	return (
@@ -314,6 +313,7 @@ export default function CarMap() {
 				position={[-0.062, 0.025, -5.242]}
 				rotation={[0, -1.571, 0]}
 			/>
+			<BarrierBorder position-y={5.0} />
 			<group position={[-2.449, 5.63, -4.173]} rotation={[0, 0.329, 0]}>
 				<mesh
 					castShadow

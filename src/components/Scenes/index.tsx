@@ -1,5 +1,4 @@
 import { Environment } from '@react-three/drei';
-import { presetsObj } from '@react-three/drei/helpers/environment-assets';
 import { useThree } from '@react-three/fiber';
 import { useControls } from 'leva';
 import React, { useEffect } from 'react';
@@ -38,8 +37,9 @@ export default function Scenes(props: ScenesProps) {
 		},
 	});
 
-	const { environment, environmentIntensity, backgroundBlurriness } =
-		useControls('🏞️ Scene', {
+	const { environmentIntensity, backgroundBlurriness } = useControls(
+		'🏞️ Scene',
+		{
 			environment: {
 				options: [
 					'apartment',
@@ -69,7 +69,8 @@ export default function Scenes(props: ScenesProps) {
 				value: 1.0,
 				label: 'Background Blurriness',
 			},
-		});
+		}
+	);
 
 	const { fov } = useControls('🎥 Camera', {
 		fov: {
@@ -95,9 +96,10 @@ export default function Scenes(props: ScenesProps) {
 		<>
 			<Environment
 				background
+				files='/src/assets/env/venice_sunset_1k.hdr'
 				backgroundBlurriness={backgroundBlurriness}
 				environmentIntensity={environmentIntensity}
-				preset={environment as keyof typeof presetsObj}
+				// preset={environment as keyof typeof presetsObj}
 			/>
 			{props.children}
 		</>

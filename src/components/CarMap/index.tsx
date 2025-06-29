@@ -157,8 +157,8 @@ export default function CarMap() {
 		gsap
 			.to(borderPosition, {
 				y: 1.2,
-				ease: 'back.inOut(7)',
-				duration: 0.6,
+				ease: 'back.out(2)',
+				duration: 0.4,
 				onUpdate() {
 					setBorderPosition(borderPosition.clone());
 				},

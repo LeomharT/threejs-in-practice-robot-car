@@ -93,26 +93,41 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 	});
 
 	useFrame((_, delta) => {
+		if (!carRigidBody.current) return;
+
 		const forward = getForward();
 
 		if (currentPressKeys.has('w')) {
-			carRigidBody.current?.setLinvel(
+			carRigidBody.current.setLinvel(
 				{ x: forward.x * SPEED, y: 0, z: forward.z * SPEED },
 				true
 			);
-			carRigidBody.current?.applyImpulse(
+			carRigidBody.current.applyImpulse(
 				{ x: forward.x, y: 0, z: forward.z },
 				true
 			);
 		}
 
 		if (currentPressKeys.has('s')) {
-			carRigidBody.current?.setLinvel(
-				{ x: -forward.x * SPEED, y: 0, z: forward.z * SPEED },
+			const backward = forward.clone().multiplyScalar(-1);
+
+			carRigidBody.current.setLinvel(
+				{ x: backward.x * SPEED, y: 0, z: backward.z * SPEED },
 				true
 			);
-			carRigidBody.current?.applyImpulse(
-				{ x: -forward.x, y: 0, z: forward.z },
+			carRigidBody.current.applyImpulse(
+				{ x: backward.x, y: 0, z: backward.z },
+				true
+			);
+		}
+
+		if (currentPressKeys.has('a')) {
+			carRigidBody.current.setAngvel(
+				{
+					x: 0,
+					y: (Math.PI / 8) * carRigidBody.current.linvel().x,
+					z: 0,
+				},
 				true
 			);
 		}
@@ -165,10 +180,15 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 				wheels.current.children[3].rotation.y = 0;
 			}
 		});
-	}, []);
+	}, [currentPressKeys]);
 
 	return (
-		<RigidBody ref={carRigidBody} gravityScale={2.5} type='dynamic'>
+		<RigidBody
+			ref={carRigidBody}
+			gravityScale={2.5}
+			type='dynamic'
+			restitution={0.25}
+		>
 			<group {...props} dispose={null}>
 				<group scale={0.096}>
 					<mesh

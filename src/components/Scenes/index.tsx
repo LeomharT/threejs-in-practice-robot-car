@@ -1,5 +1,6 @@
 import { Environment } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
+import { Physics } from '@react-three/rapier';
 import { useControls } from 'leva';
 import React, { useEffect } from 'react';
 import {
@@ -81,6 +82,10 @@ export default function Scenes(props: ScenesProps) {
 		},
 	});
 
+	const { debug } = useControls('⚛️ Physics', {
+		debug: true,
+	});
+
 	useEffect(() => {
 		gl.toneMapping = toneMapping;
 	}, [gl, toneMapping]);
@@ -93,7 +98,7 @@ export default function Scenes(props: ScenesProps) {
 	}, [camera, fov]);
 
 	return (
-		<>
+		<Physics debug={debug} gravity={[0, -9.81, 0]}>
 			<Environment
 				background
 				files='/src/assets/env/venice_sunset_1k.hdr'
@@ -102,6 +107,6 @@ export default function Scenes(props: ScenesProps) {
 				// preset={environment as keyof typeof presetsObj}
 			/>
 			{props.children}
-		</>
+		</Physics>
 	);
 }

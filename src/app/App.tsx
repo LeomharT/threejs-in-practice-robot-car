@@ -1,13 +1,11 @@
 import { CameraControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { Physics } from '@react-three/rapier';
 import { Perf } from 'r3f-perf';
 import { ACESFilmicToneMapping, PCFSoftShadowMap } from 'three';
 import CarMap from '../components/CarMap';
 import Lights from '../components/Lights';
 import RobotCars from '../components/RobotCar';
 import Scenes from '../components/Scenes';
-import TestModel from '../components/TestModel';
 
 export default function App() {
 	return (
@@ -34,13 +32,10 @@ export default function App() {
 			/>
 			<axesHelper args={[20]} />
 			<Lights />
-			<Physics debug gravity={[0, -1, 0]}>
-				<Scenes>
-					<CarMap />
-					<RobotCars />
-					<TestModel />
-				</Scenes>
-			</Physics>
+			<Scenes>
+				<CarMap />
+				<RobotCars />
+			</Scenes>
 		</Canvas>
 	);
 }

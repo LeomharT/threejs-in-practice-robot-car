@@ -107,7 +107,7 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 		}),
 	});
 
-	useFrame((_, delta) => {
+	useFrame(() => {
 		if (!carRigidBody.current) return;
 
 		if (!(wheels.current instanceof Group)) return;
@@ -173,7 +173,7 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 		const velocity = carRigidBody.current.linvel();
 		const v = new Vector3(velocity.x, velocity.y, velocity.z);
 
-		const forwardAmount = v.dot(forward) / 16.55;
+		const forwardAmount = v.dot(forward) / 25.0;
 
 		wheels.current.children[0].rotation.z -= forwardAmount;
 		wheels.current.children[1].rotation.z -= forwardAmount;

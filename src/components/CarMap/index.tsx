@@ -1,9 +1,11 @@
 import { useGLTF } from '@react-three/drei';
 import type { ObjectMap } from '@react-three/fiber';
+import { RigidBody } from '@react-three/rapier';
 import gsap from 'gsap';
 import { button, folder, useControls } from 'leva';
 import { useRef, useState, type JSX } from 'react';
 import {
+	BoxGeometry,
 	Euler,
 	Mesh,
 	Vector3,
@@ -446,13 +448,22 @@ export default function CarMap() {
 				material={materials.浅灰}
 				scale={[10, 1, 12]}
 			/>
-			<mesh
+			<RigidBody type='fixed'>
+				<mesh
+					geometry={new BoxGeometry(20, 0.1, 24, 6, 6, 6)}
+					position-y={-0.05}
+					receiveShadow
+					material={materials.地板深色}
+					name='大地面'
+				/>
+			</RigidBody>
+			{/* <mesh
 				castShadow
 				receiveShadow
 				geometry={nodes.大地面.geometry}
 				material={materials.地板深色}
 				scale={[10, 1, 12]}
-			/>
+			/> */}
 			<mesh
 				castShadow
 				receiveShadow

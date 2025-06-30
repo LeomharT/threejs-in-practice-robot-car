@@ -1,8 +1,8 @@
-import { useGLTF } from '@react-three/drei';
+import { useGLTF, useKeyboardControls } from '@react-three/drei';
 import { useFrame, type ObjectMap } from '@react-three/fiber';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { button, useControls } from 'leva';
-import { useEffect, useRef, useState, type JSX } from 'react';
+import { useRef, type JSX } from 'react';
 import {
 	Group,
 	Quaternion,
@@ -13,6 +13,7 @@ import {
 	type Object3D,
 } from 'three';
 import type { GLTF } from 'three-stdlib';
+import { _Controls } from '../../app/keyboard';
 
 type GLTFResult = GLTF & {
 	nodes: {
@@ -57,8 +58,6 @@ type GLTFResult = GLTF & {
 	};
 };
 
-const SPEED = 5.0;
-
 export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 	const { nodes, materials } = useGLTF(
 		'/src/assets/models/ros-car/robot-car.glb'
@@ -68,20 +67,36 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 
 	const wheels = useRef<JSX.IntrinsicElements['group']>(null);
 
-	const [currentPressKeys, setCurrentPressKeys] = useState(new Set());
+	const forwardPressed = useKeyboardControls(
+		(state) => state[_Controls.forward]
+	);
+	const backPressed = useKeyboardControls((state) => state[_Controls.back]);
+	const leftPressed = useKeyboardControls((state) => state[_Controls.left]);
+	const rightPressed = useKeyboardControls((state) => state[_Controls.right]);
 
 	function getForward() {
 		if (carRigidBody.current) {
 			const q = carRigidBody.current.rotation();
 			const quat = new Quaternion(q.x, q.y, q.z, q.w);
-
 			return new Vector3(1, 0, 0).applyQuaternion(quat).normalize();
 		}
 
 		return new Vector3();
 	}
 
-	useControls('🚘 Robot Car', {
+	const { angvel, speed } = useControls('🚘 Robot Car', {
+		angvel: {
+			min: 0,
+			max: Math.PI,
+			step: 0.001,
+			value: Math.PI / 8,
+		},
+		speed: {
+			min: 0,
+			max: 10,
+			step: 0.001,
+			value: 2.5,
+		},
 		Reset: button(() => {
 			if (carRigidBody.current) {
 				carRigidBody.current.setTranslation({ x: 0, y: 3.5, z: 0 }, true);
@@ -95,92 +110,76 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 	useFrame((_, delta) => {
 		if (!carRigidBody.current) return;
 
-		const forward = getForward();
+		if (!(wheels.current instanceof Group)) return;
 
-		if (currentPressKeys.has('w')) {
+		const forward = getForward();
+		const backward = forward.clone().multiplyScalar(-1);
+
+		// Angvel Impulse
+		const impulse = { x: 0, y: 0, z: 0 };
+
+		if (forwardPressed) {
 			carRigidBody.current.setLinvel(
-				{ x: forward.x * SPEED, y: 0, z: forward.z * SPEED },
+				{ x: forward.x * speed, y: 0, z: forward.z * speed },
 				true
 			);
 			carRigidBody.current.applyImpulse(
 				{ x: forward.x, y: 0, z: forward.z },
 				true
 			);
+
+			if (leftPressed) {
+				impulse.y += angvel;
+				carRigidBody.current.setAngvel({ ...impulse }, true);
+			}
+			if (rightPressed) {
+				impulse.y -= angvel;
+				carRigidBody.current.setAngvel({ ...impulse }, true);
+			}
 		}
 
-		if (currentPressKeys.has('s')) {
-			const backward = forward.clone().multiplyScalar(-1);
-
+		if (backPressed) {
 			carRigidBody.current.setLinvel(
-				{ x: backward.x * SPEED, y: 0, z: backward.z * SPEED },
+				{ x: backward.x * speed, y: 0, z: backward.z * speed },
 				true
 			);
 			carRigidBody.current.applyImpulse(
 				{ x: backward.x, y: 0, z: backward.z },
 				true
 			);
+
+			if (leftPressed) {
+				impulse.y -= angvel;
+				carRigidBody.current.setAngvel({ ...impulse }, true);
+			}
+			if (rightPressed) {
+				impulse.y += angvel;
+				carRigidBody.current.setAngvel({ ...impulse }, true);
+			}
 		}
 
-		if (currentPressKeys.has('a')) {
-			carRigidBody.current.setAngvel(
-				{
-					x: 0,
-					y: (Math.PI / 8) * carRigidBody.current.linvel().x,
-					z: 0,
-				},
-				true
-			);
+		wheels.current.children[0].rotation.y = 0;
+		wheels.current.children[1].rotation.y = 0;
+
+		if (leftPressed) {
+			wheels.current.children[0].rotation.y = angvel;
+			wheels.current.children[1].rotation.y = angvel;
+		}
+		if (rightPressed) {
+			wheels.current.children[0].rotation.y = -angvel;
+			wheels.current.children[1].rotation.y = -angvel;
 		}
 
-		if (wheels.current instanceof Group) {
-			wheels.current.children[0].rotation.z -= delta;
-			wheels.current.children[1].rotation.z -= delta;
-			wheels.current.children[2].rotation.z -= delta;
-			wheels.current.children[3].rotation.z -= delta;
-		}
+		const velocity = carRigidBody.current.linvel();
+		const v = new Vector3(velocity.x, velocity.y, velocity.z);
+
+		const forwardAmount = v.dot(forward) / 16.55;
+
+		wheels.current.children[0].rotation.z -= forwardAmount;
+		wheels.current.children[1].rotation.z -= forwardAmount;
+		wheels.current.children[2].rotation.z -= forwardAmount;
+		wheels.current.children[3].rotation.z -= forwardAmount;
 	});
-
-	useEffect(() => {
-		window.addEventListener('keypress', (e: KeyboardEvent) => {
-			let direction = 0;
-
-			if (
-				wheels.current instanceof Group &&
-				carRigidBody.current instanceof RapierRigidBody
-			) {
-				setCurrentPressKeys((prev) => {
-					return prev.add(e.key);
-				});
-
-				if (currentPressKeys.has('a')) {
-					direction = Math.PI / 8;
-				}
-
-				if (currentPressKeys.has('d')) {
-					direction = -Math.PI / 8;
-				}
-
-				wheels.current.children[0].rotation.y = direction;
-				wheels.current.children[1].rotation.y = direction;
-			}
-		});
-
-		window.addEventListener('keyup', (e: KeyboardEvent) => {
-			setCurrentPressKeys((prev) => {
-				prev.delete(e.key);
-				return prev;
-			});
-
-			if (currentPressKeys.has('d') || currentPressKeys.has('a')) return;
-
-			if (wheels.current instanceof Group) {
-				wheels.current.children[0].rotation.y = 0;
-				wheels.current.children[1].rotation.y = 0;
-				wheels.current.children[2].rotation.y = 0;
-				wheels.current.children[3].rotation.y = 0;
-			}
-		});
-	}, [currentPressKeys]);
 
 	return (
 		<RigidBody
@@ -188,6 +187,7 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 			gravityScale={2.5}
 			type='dynamic'
 			restitution={0.25}
+			angularDamping={15}
 		>
 			<group {...props} dispose={null}>
 				<group scale={0.096}>

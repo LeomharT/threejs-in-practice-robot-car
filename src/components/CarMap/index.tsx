@@ -441,14 +441,16 @@ export default function CarMap() {
 				material={materials.黄漆}
 				position={[0, 0, -2]}
 			/>
-			<mesh
-				castShadow
-				receiveShadow
-				geometry={nodes.外墙30.geometry}
-				material={materials.浅灰}
-				scale={[10, 1, 12]}
-			/>
-			<RigidBody type='fixed'>
+			<RigidBody type='fixed' colliders='trimesh'>
+				<mesh
+					castShadow
+					receiveShadow
+					geometry={nodes.外墙30.geometry}
+					material={materials.浅灰}
+					scale={[10, 1, 12]}
+				/>
+			</RigidBody>
+			<RigidBody type='fixed' colliders='cuboid'>
 				<mesh
 					geometry={new BoxGeometry(20, 0.1, 24, 6, 6, 6)}
 					position-y={-0.05}

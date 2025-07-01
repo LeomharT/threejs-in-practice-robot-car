@@ -129,11 +129,11 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 			);
 
 			if (leftPressed) {
-				impulse.y += angvel;
+				impulse.y += angvel * (Math.PI / 2);
 				carRigidBody.current.setAngvel({ ...impulse }, true);
 			}
 			if (rightPressed) {
-				impulse.y -= angvel;
+				impulse.y -= angvel * (Math.PI / 2);
 				carRigidBody.current.setAngvel({ ...impulse }, true);
 			}
 		}
@@ -149,11 +149,11 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 			);
 
 			if (leftPressed) {
-				impulse.y -= angvel;
+				impulse.y -= angvel * (Math.PI / 2);
 				carRigidBody.current.setAngvel({ ...impulse }, true);
 			}
 			if (rightPressed) {
-				impulse.y += angvel;
+				impulse.y += angvel * (Math.PI / 2);
 				carRigidBody.current.setAngvel({ ...impulse }, true);
 			}
 		}
@@ -187,7 +187,8 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 			gravityScale={2.5}
 			type='dynamic'
 			restitution={0.25}
-			angularDamping={15}
+			angularDamping={25}
+			linearDamping={15}
 		>
 			<group {...props} dispose={null}>
 				<group scale={0.096}>

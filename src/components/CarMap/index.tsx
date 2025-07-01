@@ -1,6 +1,6 @@
 import { useGLTF } from '@react-three/drei';
 import type { ObjectMap } from '@react-three/fiber';
-import { RigidBody } from '@react-three/rapier';
+import { RapierRigidBody, RigidBody } from '@react-three/rapier';
 import gsap from 'gsap';
 import { button, folder, useControls } from 'leva';
 import { useRef, useState, type JSX } from 'react';
@@ -114,6 +114,7 @@ export default function CarMap() {
 	) as GLTFResult & ObjectMap;
 
 	const barrierRrm = useRef<JSX.IntrinsicElements['group']>(null);
+	const barrierRrmRigidBody = useRef<RapierRigidBody>(null);
 
 	const [borderPosition, setBorderPosition] = useState(new Vector3(0, -0.2, 0));
 
@@ -127,15 +128,17 @@ export default function CarMap() {
 				label: 'Rotation Y',
 			},
 			Lift: button(() => {
-				ratateBarrierRrm(-Math.PI / 2);
+				rotateBarrierRrm(-Math.PI / 2);
+				barrierRrmRigidBody.current?.setEnabled(false);
 			}),
 			Down: button(() => {
-				ratateBarrierRrm(0);
+				rotateBarrierRrm(0);
+				barrierRrmRigidBody.current?.setEnabled(true);
 			}),
 		}),
 	}));
 
-	function ratateBarrierRrm(deg: number = 0) {
+	function rotateBarrierRrm(deg: number = 0) {
 		if (!barrierRrm.current) throw new Error();
 		if (!(barrierRrm.current.rotation instanceof Euler)) return;
 
@@ -376,20 +379,22 @@ export default function CarMap() {
 				position={[-0.062, 0.025, -5.242]}
 				rotation={[0, -1.571, 0]}
 			/>
-			<group position={[-2.449, 5.63, -4.173]} rotation={[0, 0.329, 0]}>
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.树苗002.geometry}
-					material={materials.墨绿}
-				/>
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.树苗002_1.geometry}
-					material={materials.棕色}
-				/>
-			</group>
+			<RigidBody type='fixed' colliders='hull'>
+				<group position={[-2.449, 5.63, -4.173]} rotation={[0, 0.329, 0]}>
+					<mesh
+						castShadow
+						receiveShadow
+						geometry={nodes.树苗002.geometry}
+						material={materials.墨绿}
+					/>
+					<mesh
+						castShadow
+						receiveShadow
+						geometry={nodes.树苗002_1.geometry}
+						material={materials.棕色}
+					/>
+				</group>
+			</RigidBody>
 			<mesh
 				castShadow
 				receiveShadow
@@ -516,50 +521,56 @@ export default function CarMap() {
 				position={[-2.06, 1.103, 6.555]}
 				rotation={[-Math.PI, 0, -Math.PI]}
 			/>
-			<mesh
-				castShadow
-				receiveShadow
-				geometry={nodes.闸.geometry}
-				material={materials.交通灯黑柱}
-				position={[-1.905, 0.587, 6.547]}
-				rotation={[-Math.PI, 0, -Math.PI]}
-			/>
-			<group
-				ref={barrierRrm}
-				position={[-1.879, 1.034, 6.553]}
-				rotation={[-rotationX, 0, Math.PI]}
-			>
+			<RigidBody type='fixed' colliders='cuboid'>
 				<mesh
 					castShadow
 					receiveShadow
-					geometry={nodes.杆.geometry}
+					geometry={nodes.闸.geometry}
 					material={materials.交通灯黑柱}
-					rotation-x={-Math.PI / 4 - Math.PI}
+					position={[-1.905, 0.587, 6.547]}
+					rotation={[-Math.PI, 0, -Math.PI]}
 				/>
+			</RigidBody>
+			<RigidBody ref={barrierRrmRigidBody} type='fixed' colliders='trimesh'>
+				<group
+					ref={barrierRrm}
+					position={[-1.879, 1.034, 6.553]}
+					rotation={[-rotationX, 0, Math.PI]}
+				>
+					<mesh
+						castShadow
+						receiveShadow
+						geometry={nodes.杆.geometry}
+						material={materials.交通灯黑柱}
+						rotation-x={-Math.PI / 4 - Math.PI}
+					/>
+					<mesh
+						castShadow
+						receiveShadow
+						geometry={nodes.杆_1.geometry}
+						material={materials.红色}
+						rotation-x={-Math.PI / 4 - Math.PI}
+					/>
+					<mesh
+						castShadow
+						receiveShadow
+						geometry={nodes.杆_2.geometry}
+						material={materials.浅灰}
+						rotation-x={-Math.PI / 4 - Math.PI}
+					/>
+				</group>
+			</RigidBody>
+			<RigidBody type='fixed' colliders='cuboid'>
 				<mesh
 					castShadow
 					receiveShadow
-					geometry={nodes.杆_1.geometry}
-					material={materials.红色}
-					rotation-x={-Math.PI / 4 - Math.PI}
+					geometry={nodes.建筑001.geometry}
+					material={materials.建筑物}
+					position={[1.561, 1.538, 2.997]}
+					rotation={[0, -1.571, 0]}
+					scale={[0.5, 1.4, 1.25]}
 				/>
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.杆_2.geometry}
-					material={materials.浅灰}
-					rotation-x={-Math.PI / 4 - Math.PI}
-				/>
-			</group>
-			<mesh
-				castShadow
-				receiveShadow
-				geometry={nodes.建筑001.geometry}
-				material={materials.建筑物}
-				position={[1.561, 1.538, 2.997]}
-				rotation={[0, -1.571, 0]}
-				scale={[0.5, 1.4, 1.25]}
-			/>
+			</RigidBody>
 			<mesh
 				castShadow
 				receiveShadow

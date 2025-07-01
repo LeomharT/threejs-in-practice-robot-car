@@ -91,7 +91,7 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 			min: 0,
 			max: Math.PI,
 			step: 0.001,
-			value: Math.PI / 8,
+			value: Math.PI / 4,
 		},
 		speed: {
 			min: 0,
@@ -170,12 +170,12 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 		wheels.current.children[1].rotation.y = 0;
 
 		if (leftPressed) {
-			wheels.current.children[0].rotation.y = angvel;
-			wheels.current.children[1].rotation.y = angvel;
+			wheels.current.children[0].rotation.y = angvel * 0.5;
+			wheels.current.children[1].rotation.y = angvel * 0.5;
 		}
 		if (rightPressed) {
-			wheels.current.children[0].rotation.y = -angvel;
-			wheels.current.children[1].rotation.y = -angvel;
+			wheels.current.children[0].rotation.y = -angvel * 0.5;
+			wheels.current.children[1].rotation.y = -angvel * 0.5;
 		}
 
 		const velocity = carRigidBody.current.linvel();

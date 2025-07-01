@@ -60,7 +60,7 @@ type GLTFResult = GLTF & {
 
 export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 	const { nodes, materials } = useGLTF(
-		'/src/assets/models/ros-car/robot-car.glb'
+		'/assets/models/ros-car/robot-car.glb'
 	) as GLTFResult & ObjectMap;
 
 	const carRigidBody = useRef<RapierRigidBody>(null);

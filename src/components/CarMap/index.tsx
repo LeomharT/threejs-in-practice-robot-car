@@ -110,7 +110,7 @@ type GLTFResult = GLTF & {
 
 export default function CarMap() {
 	const { nodes, materials } = useGLTF(
-		'/src/assets/models/ros-car/ros-car-map.glb'
+		'/assets/models/ros-car/ros-car-map.glb'
 	) as GLTFResult & ObjectMap;
 
 	const barrierRrm = useRef<JSX.IntrinsicElements['group']>(null);
@@ -705,4 +705,4 @@ export default function CarMap() {
 	);
 }
 
-useGLTF.preload('/src/assets/models/ros-car/ros-car-map.glb');
+useGLTF.preload('/assets/models/ros-car/ros-car-map.glb');

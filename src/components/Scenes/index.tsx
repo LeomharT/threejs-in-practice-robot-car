@@ -101,7 +101,7 @@ export default function Scenes(props: ScenesProps) {
 		<Physics debug={debug} gravity={[0, -9.81, 0]}>
 			<Environment
 				background
-				files='/src/assets/env/venice_sunset_1k.hdr'
+				files='/assets/env/venice_sunset_1k.hdr'
 				backgroundBlurriness={backgroundBlurriness}
 				environmentIntensity={environmentIntensity}
 				// preset={environment as keyof typeof presetsObj}

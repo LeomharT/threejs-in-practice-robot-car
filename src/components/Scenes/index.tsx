@@ -83,7 +83,7 @@ export default function Scenes(props: ScenesProps) {
 	});
 
 	const { debug } = useControls('⚛️ Physics', {
-		debug: true,
+		debug: false,
 	});
 
 	useEffect(() => {

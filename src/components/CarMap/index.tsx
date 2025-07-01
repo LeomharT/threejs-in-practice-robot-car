@@ -346,17 +346,18 @@ export default function CarMap() {
 				scale={0.01}
 			/>
 			<mesh
+				name='P地面'
 				castShadow
 				receiveShadow
-				geometry={nodes.p地面.geometry}
 				material={materials.地板深色}
 				position={[-2.055, 0.026, 3.694]}
 				rotation={[0, -1.571, 0]}
-				scale={[2.36, 1, 1.83]}
 				onPointerEnter={handleOnPointerEnter}
 				onPointerOut={handleOnPointerOut}
 				onPointerDown={handleOnParkingClick}
-			/>
+			>
+				<boxGeometry args={[4.72, 0.01, 3.66]} />
+			</mesh>
 			<mesh
 				castShadow
 				receiveShadow
@@ -379,22 +380,22 @@ export default function CarMap() {
 				position={[-0.062, 0.025, -5.242]}
 				rotation={[0, -1.571, 0]}
 			/>
-			<RigidBody type='fixed' colliders='hull'>
-				<group position={[-2.449, 5.63, -4.173]} rotation={[0, 0.329, 0]}>
-					<mesh
-						castShadow
-						receiveShadow
-						geometry={nodes.树苗002.geometry}
-						material={materials.墨绿}
-					/>
+			<group position={[-2.449, 5.63, -4.173]} rotation={[0, 0.329, 0]}>
+				<mesh
+					castShadow
+					receiveShadow
+					geometry={nodes.树苗002.geometry}
+					material={materials.墨绿}
+				/>
+				<RigidBody type='fixed' colliders='hull'>
 					<mesh
 						castShadow
 						receiveShadow
 						geometry={nodes.树苗002_1.geometry}
 						material={materials.棕色}
 					/>
-				</group>
-			</RigidBody>
+				</RigidBody>
+			</group>
 			<mesh
 				castShadow
 				receiveShadow

@@ -1,13 +1,16 @@
 import { useGLTF, useKeyboardControls } from '@react-three/drei';
-import { useFrame, type ObjectMap } from '@react-three/fiber';
+import { useFrame, useThree, type ObjectMap } from '@react-three/fiber';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { button, useControls } from 'leva';
-import { useRef, useState, type JSX } from 'react';
+import { useEffect, useRef, useState, type JSX } from 'react';
 import {
+	BoxGeometry,
 	Group,
+	Mesh,
+	MeshBasicMaterial,
 	Quaternion,
+	Raycaster,
 	Vector3,
-	type Mesh,
 	type MeshPhysicalMaterial,
 	type MeshStandardMaterial,
 	type Object3D,
@@ -63,9 +66,17 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 		'/assets/models/ros-car/robot-car.glb'
 	) as GLTFResult & ObjectMap;
 
+	const { scene } = useThree();
+
+	const raycaster = useRef(new Raycaster());
+
 	const carRigidBody = useRef<RapierRigidBody>(null);
 
 	const wheels = useRef<JSX.IntrinsicElements['group']>(null);
+
+	const box = useRef(
+		new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial({ color: 'red' }))
+	);
 
 	const [linearDamping, setLinearDamping] = useState(5.0);
 
@@ -84,6 +95,16 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 		}
 
 		return new Vector3();
+	}
+
+	function isInsideParkingSpot(): boolean {
+		const boxPosition = box.current.position.clone();
+
+		raycaster.current.set(boxPosition, new Vector3(0, -1, 0));
+
+		const intersect = raycaster.current.intersectObject(scene);
+
+		return !!intersect.filter((item) => item.object.name === 'P地面').length;
 	}
 
 	const { angvel, speed } = useControls('🚘 Robot Car', {
@@ -187,7 +208,17 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 		wheels.current.children[1].rotation.z -= forwardAmount;
 		wheels.current.children[2].rotation.z -= forwardAmount;
 		wheels.current.children[3].rotation.z -= forwardAmount;
+
+		box.current.position.copy(carRigidBody.current.translation());
+		box.current.position.y = 2.0;
+
+		console.log(isInsideParkingSpot());
 	});
+
+	useEffect(() => {
+		box.current.visible = false;
+		scene.add(box.current);
+	}, [scene]);
 
 	return (
 		<RigidBody

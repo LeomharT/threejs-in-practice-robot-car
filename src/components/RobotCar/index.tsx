@@ -2,7 +2,7 @@ import { useGLTF, useKeyboardControls } from '@react-three/drei';
 import { useFrame, type ObjectMap } from '@react-three/fiber';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { button, useControls } from 'leva';
-import { useRef, type JSX } from 'react';
+import { useRef, useState, type JSX } from 'react';
 import {
 	Group,
 	Quaternion,
@@ -67,6 +67,8 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 
 	const wheels = useRef<JSX.IntrinsicElements['group']>(null);
 
+	const [linearDamping, setLinearDamping] = useState(5.0);
+
 	const forwardPressed = useKeyboardControls(
 		(state) => state[_Controls.forward]
 	);
@@ -98,12 +100,18 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 			value: 2.5,
 		},
 		Reset: button(() => {
+			setLinearDamping(0.0);
+
 			if (carRigidBody.current) {
 				carRigidBody.current.setTranslation({ x: 0, y: 3.5, z: 0 }, true);
 				carRigidBody.current.setRotation({ x: 0, y: 0, z: 0, w: 1 }, true);
 				carRigidBody.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
 				carRigidBody.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
 			}
+
+			setTimeout(() => {
+				setLinearDamping(5.0);
+			}, 1000);
 		}),
 	});
 
@@ -129,11 +137,11 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 			);
 
 			if (leftPressed) {
-				impulse.y += angvel * (Math.PI / 2);
+				impulse.y += angvel * (Math.PI / 4);
 				carRigidBody.current.setAngvel({ ...impulse }, true);
 			}
 			if (rightPressed) {
-				impulse.y -= angvel * (Math.PI / 2);
+				impulse.y -= angvel * (Math.PI / 4);
 				carRigidBody.current.setAngvel({ ...impulse }, true);
 			}
 		}
@@ -149,11 +157,11 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 			);
 
 			if (leftPressed) {
-				impulse.y -= angvel * (Math.PI / 2);
+				impulse.y -= angvel * (Math.PI / 4);
 				carRigidBody.current.setAngvel({ ...impulse }, true);
 			}
 			if (rightPressed) {
-				impulse.y += angvel * (Math.PI / 2);
+				impulse.y += angvel * (Math.PI / 4);
 				carRigidBody.current.setAngvel({ ...impulse }, true);
 			}
 		}
@@ -188,7 +196,7 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 			type='dynamic'
 			restitution={0.25}
 			angularDamping={25}
-			linearDamping={15}
+			linearDamping={linearDamping}
 		>
 			<group {...props} dispose={null}>
 				<group scale={0.096}>

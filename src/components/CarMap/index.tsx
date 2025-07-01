@@ -3,7 +3,7 @@ import type { ObjectMap } from '@react-three/fiber';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
 import gsap from 'gsap';
 import { button, folder, useControls } from 'leva';
-import { useRef, useState, type JSX } from 'react';
+import { forwardRef, useRef, useState, type JSX } from 'react';
 import {
 	BoxGeometry,
 	Euler,
@@ -108,7 +108,7 @@ type GLTFResult = GLTF & {
 	};
 };
 
-export default function CarMap() {
+const CarMap = forwardRef(() => {
 	const { nodes, materials } = useGLTF(
 		'/assets/models/ros-car/ros-car-map.glb'
 	) as GLTFResult & ObjectMap;
@@ -704,6 +704,8 @@ export default function CarMap() {
 			</group>
 		</group>
 	);
-}
+});
+
+export default CarMap;
 
 useGLTF.preload('/assets/models/ros-car/ros-car-map.glb');

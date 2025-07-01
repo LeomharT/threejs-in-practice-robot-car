@@ -80,6 +80,8 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 
 	const [linearDamping, setLinearDamping] = useState(5.0);
 
+	const [parking, setParking] = useState(false);
+
 	const forwardPressed = useKeyboardControls(
 		(state) => state[_Controls.forward]
 	);
@@ -97,14 +99,17 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 		return new Vector3();
 	}
 
-	function isInsideParkingSpot(): boolean {
+	function intersectRobotCar() {
 		const boxPosition = box.current.position.clone();
 
 		raycaster.current.set(boxPosition, new Vector3(0, -1, 0));
 
 		const intersect = raycaster.current.intersectObject(scene);
 
-		return !!intersect.filter((item) => item.object.name === 'P地面').length;
+		const result = !!intersect.filter((item) => item.object.name === 'P地面')
+			.length;
+
+		if (result !== parking) setParking(result);
 	}
 
 	const { angvel, speed } = useControls('🚘 Robot Car', {
@@ -212,13 +217,23 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 		box.current.position.copy(carRigidBody.current.translation());
 		box.current.position.y = 2.0;
 
-		console.log(isInsideParkingSpot());
+		intersectRobotCar();
 	});
 
 	useEffect(() => {
 		box.current.visible = false;
 		scene.add(box.current);
 	}, [scene]);
+
+	useEffect(() => {
+		const pGround = scene.getObjectByName('P地面');
+
+		if (parking) {
+			pGround?.userData.up();
+		}
+
+		console.log(parking);
+	}, [parking]);
 
 	return (
 		<RigidBody

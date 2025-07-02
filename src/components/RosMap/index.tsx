@@ -108,7 +108,7 @@ type GLTFResult = GLTF & {
 	};
 };
 
-const CarMap = forwardRef(() => {
+const RosMap = forwardRef(() => {
 	const { nodes, materials } = useGLTF(
 		'/assets/models/ros-car/ros-car-map.glb'
 	) as GLTFResult & ObjectMap;
@@ -706,6 +706,6 @@ const CarMap = forwardRef(() => {
 	);
 });
 
-export default CarMap;
+export default RosMap;
 
 useGLTF.preload('/assets/models/ros-car/ros-car-map.glb');

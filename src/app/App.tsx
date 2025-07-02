@@ -7,9 +7,9 @@ import { Canvas } from '@react-three/fiber';
 import { Perf } from 'r3f-perf';
 import { useMemo } from 'react';
 import { ACESFilmicToneMapping, PCFSoftShadowMap } from 'three';
-import CarMap from '../components/CarMap';
 import Lights from '../components/Lights';
 import RobotCars from '../components/RobotCar';
+import RosMap from '../components/RosMap';
 import Scenes from '../components/Scenes';
 import { _Controls, type Controls } from './keyboard';
 
@@ -51,7 +51,7 @@ export default function App() {
 				<axesHelper args={[20]} />
 				<Lights />
 				<Scenes>
-					<CarMap />
+					<RosMap />
 					<RobotCars />
 				</Scenes>
 			</Canvas>

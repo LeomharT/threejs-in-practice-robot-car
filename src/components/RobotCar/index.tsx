@@ -225,16 +225,6 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 		scene.add(box.current);
 	}, [scene]);
 
-	useEffect(() => {
-		const pGround = scene.getObjectByName('P地面');
-
-		if (parking) {
-			pGround?.userData.up();
-		}
-
-		console.log(parking);
-	}, [parking]);
-
 	return (
 		<RigidBody
 			ref={carRigidBody}

@@ -7,6 +7,7 @@ import { Canvas } from '@react-three/fiber';
 import { Perf } from 'r3f-perf';
 import { useMemo, useRef } from 'react';
 import { ACESFilmicToneMapping, PCFSoftShadowMap } from 'three';
+import DrivePath from '../components/DrivePath';
 import Lights from '../components/Lights';
 import NavigationMesh from '../components/NavigationMesh';
 import RobotCars from '../components/RobotCar';
@@ -65,6 +66,7 @@ export default function App() {
 					<axesHelper args={[20]} />
 					<Lights />
 					<Scenes>
+						<DrivePath />
 						<NavigationMesh />
 						<RosMap />
 						<RobotCars />

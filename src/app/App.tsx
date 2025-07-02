@@ -8,6 +8,7 @@ import { Perf } from 'r3f-perf';
 import { useMemo, useRef } from 'react';
 import { ACESFilmicToneMapping, PCFSoftShadowMap } from 'three';
 import Lights from '../components/Lights';
+import NavigationMesh from '../components/NavigationMesh';
 import RobotCars from '../components/RobotCar';
 import RosMap from '../components/RosMap';
 import Scenes from '../components/Scenes';
@@ -64,6 +65,7 @@ export default function App() {
 					<axesHelper args={[20]} />
 					<Lights />
 					<Scenes>
+						<NavigationMesh />
 						<RosMap />
 						<RobotCars />
 					</Scenes>

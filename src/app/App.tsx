@@ -5,12 +5,13 @@ import {
 } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Perf } from 'r3f-perf';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { ACESFilmicToneMapping, PCFSoftShadowMap } from 'three';
 import Lights from '../components/Lights';
 import RobotCars from '../components/RobotCar';
 import RosMap from '../components/RosMap';
 import Scenes from '../components/Scenes';
+import { AppContext, type Action } from './contex';
 import { _Controls, type Controls } from './keyboard';
 
 export default function App() {
@@ -25,36 +26,49 @@ export default function App() {
 		[]
 	);
 
+	const valueRef = useRef({
+		parking: false,
+	});
+
+	function dispatch(action: Action) {
+		valueRef.current = {
+			...valueRef.current,
+			[action.type]: action.payload,
+		};
+	}
+
 	return (
-		<KeyboardControls map={map}>
-			<Canvas
-				frameloop='always'
-				shadows={{
-					type: PCFSoftShadowMap,
-					enabled: true,
-				}}
-				gl={{
-					alpha: true,
-					antialias: true,
-					toneMapping: ACESFilmicToneMapping,
-				}}
-				camera={{ fov: 75, position: [0, 20, 20] }}
-			>
-				<Perf position='top-left' />
-				<CameraControls
-					makeDefault
-					minDistance={6.35}
-					maxDistance={55.0}
-					minPolarAngle={0}
-					maxPolarAngle={Math.PI / 2.25}
-				/>
-				<axesHelper args={[20]} />
-				<Lights />
-				<Scenes>
-					<RosMap />
-					<RobotCars />
-				</Scenes>
-			</Canvas>
-		</KeyboardControls>
+		<AppContext value={{ state: valueRef, dispatch }}>
+			<KeyboardControls map={map}>
+				<Canvas
+					frameloop='always'
+					shadows={{
+						type: PCFSoftShadowMap,
+						enabled: true,
+					}}
+					gl={{
+						alpha: true,
+						antialias: true,
+						toneMapping: ACESFilmicToneMapping,
+					}}
+					camera={{ fov: 75, position: [0, 20, 20] }}
+				>
+					<Perf position='top-left' />
+					<CameraControls
+						makeDefault
+						minDistance={6.35}
+						maxDistance={55.0}
+						minPolarAngle={0}
+						maxPolarAngle={Math.PI / 2.25}
+					/>
+					<axesHelper args={[20]} />
+					<Lights />
+					<Scenes>
+						<RosMap />
+						<RobotCars />
+					</Scenes>
+				</Canvas>
+			</KeyboardControls>
+		</AppContext>
 	);
 }

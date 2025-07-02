@@ -2,7 +2,7 @@ import { useGLTF, useKeyboardControls } from '@react-three/drei';
 import { useFrame, useThree, type ObjectMap } from '@react-three/fiber';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { button, useControls } from 'leva';
-import { useEffect, useRef, useState, type JSX } from 'react';
+import { useContext, useEffect, useRef, useState, type JSX } from 'react';
 import {
 	BoxGeometry,
 	Group,
@@ -16,6 +16,7 @@ import {
 	type Object3D,
 } from 'three';
 import type { GLTF } from 'three-stdlib';
+import { AppContext } from '../../app/contex';
 import { _Controls } from '../../app/keyboard';
 
 type GLTFResult = GLTF & {
@@ -80,7 +81,7 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 
 	const [linearDamping, setLinearDamping] = useState(5.0);
 
-	const [parking, setParking] = useState(false);
+	const { state, dispatch } = useContext(AppContext);
 
 	const forwardPressed = useKeyboardControls(
 		(state) => state[_Controls.forward]
@@ -109,7 +110,9 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 		const result = !!intersect.filter((item) => item.object.name === 'P地面')
 			.length;
 
-		if (result !== parking) setParking(result);
+		if (result !== state.current.parking) {
+			dispatch({ type: 'parking', payload: result });
+		}
 	}
 
 	const { angvel, speed } = useControls('🚘 Robot Car', {

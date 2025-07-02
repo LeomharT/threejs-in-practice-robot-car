@@ -1,9 +1,9 @@
 import { useGLTF } from '@react-three/drei';
-import type { ObjectMap } from '@react-three/fiber';
+import { useFrame, type ObjectMap } from '@react-three/fiber';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
 import gsap from 'gsap';
 import { button, folder, useControls } from 'leva';
-import { forwardRef, useRef, useState, type JSX } from 'react';
+import { useContext, useEffect, useRef, useState, type JSX } from 'react';
 import {
 	BoxGeometry,
 	Euler,
@@ -14,6 +14,7 @@ import {
 	type MeshStandardMaterial,
 } from 'three';
 import type { GLTF } from 'three-stdlib';
+import { AppContext } from '../../app/contex';
 import BarrierBorder from '../BarrierBorder';
 
 type GLTFResult = GLTF & {
@@ -108,12 +109,17 @@ type GLTFResult = GLTF & {
 	};
 };
 
-const RosMap = forwardRef(() => {
+export default function RosMap() {
 	const { nodes, materials } = useGLTF(
 		'/assets/models/ros-car/ros-car-map.glb'
 	) as GLTFResult & ObjectMap;
 
+	const { state } = useContext(AppContext);
+
+	const [parking, setParking] = useState(false);
+
 	const barrierRrm = useRef<JSX.IntrinsicElements['group']>(null);
+
 	const barrierRrmRigidBody = useRef<RapierRigidBody>(null);
 
 	const [borderPosition, setBorderPosition] = useState(new Vector3(0, -0.2, 0));
@@ -156,8 +162,7 @@ const RosMap = forwardRef(() => {
 		animate.play();
 	}
 
-	function handleOnPointerEnter() {
-		document.body.style.cursor = 'pointer';
+	function parkingSpotBarrierUp() {
 		gsap
 			.to(borderPosition, {
 				y: 1.2,
@@ -170,8 +175,7 @@ const RosMap = forwardRef(() => {
 			.play();
 	}
 
-	function handleOnPointerOut() {
-		document.body.style.cursor = 'default';
+	function parkingSpotBarrierDown() {
 		gsap
 			.to(borderPosition, {
 				y: -0.2,
@@ -182,6 +186,20 @@ const RosMap = forwardRef(() => {
 				},
 			})
 			.play();
+	}
+
+	function handleOnPointerEnter() {
+		document.body.style.cursor = 'pointer';
+
+		if (parking) return;
+		parkingSpotBarrierUp();
+	}
+
+	function handleOnPointerOut() {
+		document.body.style.cursor = 'default';
+
+		if (parking) return;
+		parkingSpotBarrierDown();
 	}
 
 	function handleOnParkingClick() {
@@ -205,6 +223,18 @@ const RosMap = forwardRef(() => {
 
 		timeLine.play();
 	}
+
+	useFrame(() => {
+		if (parking !== state.current.parking) setParking(state.current.parking);
+	});
+
+	useEffect(() => {
+		if (parking) {
+			parkingSpotBarrierUp();
+		} else {
+			parkingSpotBarrierDown();
+		}
+	}, [parking]);
 
 	return (
 		<group dispose={null}>
@@ -704,8 +734,6 @@ const RosMap = forwardRef(() => {
 			</group>
 		</group>
 	);
-});
-
-export default RosMap;
+}
 
 useGLTF.preload('/assets/models/ros-car/ros-car-map.glb');

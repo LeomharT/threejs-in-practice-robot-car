@@ -10,6 +10,7 @@ import { ACESFilmicToneMapping, PCFSoftShadowMap } from 'three';
 import DrivePath from '../components/DrivePath';
 import Lights from '../components/Lights';
 import NavigationMesh from '../components/NavigationMesh';
+import PathBeginSpot from '../components/PathBeginSpot';
 import RobotCars from '../components/RobotCar';
 import RosMap from '../components/RosMap';
 import Scenes from '../components/Scenes';
@@ -30,6 +31,7 @@ export default function App() {
 
 	const valueRef = useRef<State>({
 		parking: false,
+		begin: false,
 		path: null,
 		car: null,
 	});
@@ -73,6 +75,7 @@ export default function App() {
 								valueRef.current.path = ref;
 							}}
 						/>
+						<PathBeginSpot />
 						<NavigationMesh />
 						<RosMap />
 						<RobotCars

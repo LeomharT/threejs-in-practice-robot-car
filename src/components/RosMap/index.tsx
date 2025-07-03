@@ -135,7 +135,6 @@ export default function RosMap() {
 			},
 			Lift: button(() => {
 				if (state.current.car && state.current.car.current) {
-					console.log(state.current.car);
 					if (state.current.car.current) {
 						state.current.car.current.setTranslation(
 							{ x: 0, y: 3.5, z: 0 },

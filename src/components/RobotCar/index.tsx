@@ -129,11 +129,17 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 
 			const intersect = raycaster.current.intersectObject(scene);
 
-			const result = !!intersect.filter((item) => item.object.name === 'P地面')
+			const parking = !!intersect.filter((item) => item.object.name === 'P地面')
 				.length;
 
-			if (result !== state.current.parking) {
-				dispatch({ type: 'parking', payload: result });
+			const begin = !!intersect.filter((item) => item.object.name === 'Begin_G')
+				.length;
+
+			if (parking !== state.current.parking) {
+				dispatch({ type: 'parking', payload: parking });
+			}
+			if (begin !== state.current.begin) {
+				dispatch({ type: 'begin', payload: begin });
 			}
 		}
 

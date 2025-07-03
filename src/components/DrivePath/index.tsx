@@ -1,3 +1,4 @@
+import { useFrame } from '@react-three/fiber';
 import { RapierRigidBody } from '@react-three/rapier';
 import { useControls } from 'leva';
 import {
@@ -6,6 +7,7 @@ import {
 	useEffect,
 	useImperativeHandle,
 	useRef,
+	useState,
 	type JSX,
 } from 'react';
 import {
@@ -57,6 +59,12 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 			max: 1,
 		},
 	}));
+
+	const [begin, setBegin] = useState(false);
+
+	useFrame(() => {
+		if (begin !== state.current.begin) setBegin(state.current.begin);
+	});
 
 	useImperativeHandle(
 		_ref,
@@ -146,6 +154,33 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 	useEffect(() => {
 		moveAlonePath(progress);
 	}, [progress]);
+
+	useEffect(() => {
+		let progress = 0;
+		let animation;
+
+		function move() {
+			progress += 0.001;
+
+			set({ progress });
+
+			animation = requestAnimationFrame(move);
+
+			if (progress >= 1) {
+				cancelAnimationFrame(animation);
+			}
+		}
+
+		window.addEventListener('keypress', (e) => {
+			if (e.code === 'Enter') {
+				if (begin) {
+					progress = 0;
+					set({ progress });
+					move();
+				}
+			}
+		});
+	}, [begin]);
 
 	return (
 		<group {...props} ref={ref} dispose={null}>

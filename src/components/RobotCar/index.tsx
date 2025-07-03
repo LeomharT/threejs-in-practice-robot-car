@@ -129,6 +129,8 @@ export default function RobotCars(props: JSX.IntrinsicElements['group']) {
 			value: 2.5,
 		},
 		Reset: button(() => {
+			console.log(state.current);
+
 			setLinearDamping(0.0);
 
 			if (carRigidBody.current) {

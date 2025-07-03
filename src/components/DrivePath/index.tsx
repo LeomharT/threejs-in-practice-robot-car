@@ -1,57 +1,137 @@
 import { useControls } from 'leva';
-import { useEffect, useRef, type JSX } from 'react';
+import {
+	forwardRef,
+	useEffect,
+	useImperativeHandle,
+	useRef,
+	type JSX,
+} from 'react';
 import {
 	BoxGeometry,
 	BufferGeometry,
 	CatmullRomCurve3,
+	Color,
 	Group,
+	IcosahedronGeometry,
+	Line,
 	LineBasicMaterial,
-	LineLoop,
 	Mesh,
 	MeshBasicMaterial,
 	Vector3,
 } from 'three';
+import type { DrivePathRef, DriveProps } from './type';
+
 const initialPoints = [
-	{ x: 6, y: 0, z: -8 },
+	{ x: 7, y: 0, z: 2 },
 	{ x: 6, y: 0, z: 8 },
 	{ x: -6, y: 0, z: 8 },
 	{ x: -6, y: 0, z: -8 },
+	{ x: 6, y: 0, z: -8 },
+	{ x: 7, y: 0, z: -1 },
+	{ x: 0, y: 0, z: 0 },
+	{ x: -2, y: 0, z: -2.5 },
+	{ x: -2, y: 0, z: 4 },
 ];
-export default function DrivePath(props: JSX.IntrinsicElements['group']) {
+
+const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 	const ref = useRef<JSX.IntrinsicElements['group']>(null);
 
-	const { visible } = useControls('🛣️ Path', {
+	const curve = useRef<CatmullRomCurve3>(null);
+
+	const box = useRef(
+		new Mesh(new BoxGeometry(2, 2, 2), new MeshBasicMaterial({ color: 'red' }))
+	);
+
+	const { visible, progress } = useControls('🛣️ Path', {
 		visible: false,
+		progress: {
+			value: 0,
+			step: 0.0001,
+			min: 0,
+			max: 1,
+		},
 	});
+
+	useImperativeHandle(
+		_ref,
+		() => ({
+			visible,
+			curve: curve.current as CatmullRomCurve3,
+		}),
+		[visible]
+	);
 
 	useEffect(() => {
 		if (!(ref.current instanceof Group)) return;
+		if (!(curve.current instanceof CatmullRomCurve3)) return;
 
-		const boxGeometry = new BoxGeometry(0.1, 0.1, 0.1);
-		const boxMaterial = new MeshBasicMaterial();
+		ref.current.clear();
+
+		const sphereGeometry = new IcosahedronGeometry(0.1, 5);
+		const sphereMaterial = new MeshBasicMaterial();
 
 		for (const handlePos of initialPoints) {
-			const handle = new Mesh(boxGeometry, boxMaterial);
-			handle.scale.setScalar(10.0);
+			const material = sphereMaterial.clone();
+			material.color = new Color().setRGB(
+				Math.random(),
+				Math.random(),
+				Math.random()
+			);
+
+			const handle = new Mesh(sphereGeometry, material);
+			handle.scale.setScalar(2.0);
 			handle.position.copy(handlePos);
+
 			ref.current.add(handle);
 		}
 
-		const curve = new CatmullRomCurve3(
-			initialPoints.map((item) => new Vector3(item.x, item.y, item.z))
-		);
-		curve.curveType = 'centripetal';
-		curve.closed = true;
+		const points = curve.current.getPoints(100) as Vector3[];
 
-		const points = curve.getPoints(50);
-
-		const line = new LineLoop(
+		const line = new Line(
 			new BufferGeometry().setFromPoints(points),
 			new LineBasicMaterial({ color: 0x00ff00 })
 		);
-
 		ref.current.add(line);
+		ref.current.add(box.current);
+
+		for (const node of ref.current.children) {
+			node.visible = visible;
+		}
 	}, [visible]);
 
-	return <group {...props} ref={ref} dispose={null} position-y={1.0}></group>;
-}
+	useEffect(() => {
+		if (
+			curve.current instanceof CatmullRomCurve3 &&
+			box.current instanceof Mesh
+		) {
+			if (curve.current.getLength()) {
+				const position = curve.current.getPointAt(progress);
+
+				box.current.position.copy(position.clone() as Vector3);
+
+				const tangent = curve.current
+					.getTangentAt(progress)
+					.normalize() as Vector3;
+
+				const direction = position.clone().add(tangent) as Vector3;
+
+				box.current.lookAt(direction);
+			}
+		}
+	}, [progress]);
+
+	return (
+		<group {...props} ref={ref} dispose={null}>
+			<catmullRomCurve3
+				ref={curve}
+				args={[
+					initialPoints.map((v) => new Vector3(v.x, v.y, v.z)),
+					false,
+					'centripetal',
+				]}
+			/>
+		</group>
+	);
+});
+
+export default DrivePath;

@@ -13,7 +13,7 @@ import NavigationMesh from '../components/NavigationMesh';
 import RobotCars from '../components/RobotCar';
 import RosMap from '../components/RosMap';
 import Scenes from '../components/Scenes';
-import { AppContext, type Action } from './contex';
+import { AppContext, type Action, type State } from './contex';
 import { _Controls, type Controls } from './keyboard';
 
 export default function App() {
@@ -28,8 +28,9 @@ export default function App() {
 		[]
 	);
 
-	const valueRef = useRef({
+	const valueRef = useRef<State>({
 		parking: false,
+		path: null,
 	});
 
 	function dispatch(action: Action) {
@@ -66,7 +67,11 @@ export default function App() {
 					<axesHelper args={[20]} />
 					<Lights />
 					<Scenes>
-						<DrivePath />
+						<DrivePath
+							ref={(ref) => {
+								valueRef.current.path = ref;
+							}}
+						/>
 						<NavigationMesh />
 						<RosMap />
 						<RobotCars />

@@ -1,6 +1,8 @@
+import { RapierRigidBody } from '@react-three/rapier';
 import { useControls } from 'leva';
 import {
 	forwardRef,
+	useContext,
 	useEffect,
 	useImperativeHandle,
 	useRef,
@@ -17,8 +19,10 @@ import {
 	LineBasicMaterial,
 	Mesh,
 	MeshBasicMaterial,
+	Quaternion,
 	Vector3,
 } from 'three';
+import { AppContext } from '../../app/contex';
 import type { DrivePathRef, DriveProps } from './type';
 
 const initialPoints = [
@@ -35,6 +39,8 @@ const initialPoints = [
 
 const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 	const ref = useRef<JSX.IntrinsicElements['group']>(null);
+
+	const { state } = useContext(AppContext);
 
 	const curve = useRef<CatmullRomCurve3>(null);
 
@@ -102,7 +108,8 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 	useEffect(() => {
 		if (
 			curve.current instanceof CatmullRomCurve3 &&
-			box.current instanceof Mesh
+			box.current instanceof Mesh &&
+			state.current.car?.current instanceof RapierRigidBody
 		) {
 			if (curve.current.getLength()) {
 				const position = curve.current.getPointAt(progress);
@@ -114,8 +121,24 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 					.normalize() as Vector3;
 
 				const direction = position.clone().add(tangent) as Vector3;
-
 				box.current.lookAt(direction);
+
+				const q = new Quaternion().setFromEuler(box.current.rotation);
+				const extraQ = new Quaternion().setFromAxisAngle(
+					new Vector3(0, 1, 0),
+					-Math.PI / 2
+				);
+
+				q.multiply(extraQ);
+
+				state.current.car.current.setTranslation(
+					box.current.position.clone(),
+					true
+				);
+				state.current.car.current.setRotation(
+					{ x: q.x, y: q.y, z: q.z, w: q.w },
+					true
+				);
 			}
 		}
 	}, [progress]);

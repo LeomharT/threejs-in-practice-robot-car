@@ -48,7 +48,7 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 		new Mesh(new BoxGeometry(2, 2, 2), new MeshBasicMaterial({ color: 'red' }))
 	);
 
-	const { visible, progress } = useControls('🛣️ Path', {
+	const [{ visible, progress }, set] = useControls('🛣️ Path', () => ({
 		visible: false,
 		progress: {
 			value: 0,
@@ -56,7 +56,7 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 			min: 0,
 			max: 1,
 		},
-	});
+	}));
 
 	useImperativeHandle(
 		_ref,
@@ -105,7 +105,7 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 		}
 	}, [visible]);
 
-	useEffect(() => {
+	function moveAlonePath(progress: number) {
 		if (
 			curve.current instanceof CatmullRomCurve3 &&
 			box.current instanceof Mesh &&
@@ -141,6 +141,10 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 				);
 			}
 		}
+	}
+
+	useEffect(() => {
+		moveAlonePath(progress);
 	}, [progress]);
 
 	return (

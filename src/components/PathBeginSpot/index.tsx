@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { gsap } from 'gsap';
 import { useContext, useEffect, useState, type JSX } from 'react';
 import { suspend } from 'suspend-react';
-import { DoubleSide, Vector3 } from 'three';
+import { DoubleSide, MeshStandardMaterial, Vector3 } from 'three';
 import { AppContext } from '../../app/contex';
 import BarrierBorder from '../BarrierBorder';
 
@@ -79,34 +79,35 @@ export default function PathBeginSpot(props: JSX.IntrinsicElements['group']) {
 				position={[-0.45, 1.0, 0.01]}
 				rotation={[0, 0, Math.PI / 2]}
 				material-toneMapped={false}
+				material={new MeshStandardMaterial()}
 			>
 				START
 			</Text>
 			<mesh name='Begin_G' position-y={HEIGHT / 2}>
 				<planeGeometry args={[WIDTH, HEIGHT]} />
-				<meshBasicMaterial color={0xffffff} transparent opacity={0.1} />
+				<meshStandardMaterial color={0xffffff} transparent opacity={0.0} />
 			</mesh>
 			<mesh>
 				<planeGeometry args={[WIDTH, LINE_WIDTH]} />
-				<meshBasicMaterial side={DoubleSide} color={0xffffff} />
+				<meshStandardMaterial side={DoubleSide} color={0xffffff} />
 			</mesh>
 			<mesh
 				position={[WIDTH / 2 - LINE_WIDTH / 2, HEIGHT / 2 - LINE_WIDTH / 2, 0]}
 				rotation-z={Math.PI / 2}
 			>
 				<planeGeometry args={[HEIGHT, LINE_WIDTH]} />
-				<meshBasicMaterial side={DoubleSide} color={0xffffff} />
+				<meshStandardMaterial side={DoubleSide} color={0xffffff} />
 			</mesh>
 			<mesh position={[0, HEIGHT, 0]}>
 				<planeGeometry args={[WIDTH, LINE_WIDTH]} />
-				<meshBasicMaterial side={DoubleSide} color={0xffffff} />
+				<meshStandardMaterial side={DoubleSide} color={0xffffff} />
 			</mesh>
 			<mesh
 				position={[-WIDTH / 2 + LINE_WIDTH / 2, HEIGHT / 2 + LINE_WIDTH / 2, 0]}
 				rotation-z={Math.PI / 2}
 			>
 				<planeGeometry args={[HEIGHT, LINE_WIDTH]} />
-				<meshBasicMaterial side={DoubleSide} color={0xffffff} />
+				<meshStandardMaterial side={DoubleSide} color={0xffffff} />
 			</mesh>
 		</group>
 	);

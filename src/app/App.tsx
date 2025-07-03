@@ -31,6 +31,7 @@ export default function App() {
 	const valueRef = useRef<State>({
 		parking: false,
 		path: null,
+		car: null,
 	});
 
 	function dispatch(action: Action) {
@@ -74,7 +75,11 @@ export default function App() {
 						/>
 						<NavigationMesh />
 						<RosMap />
-						<RobotCars />
+						<RobotCars
+							ref={(ref) => {
+								valueRef.current.car = ref;
+							}}
+						/>
 					</Scenes>
 				</Canvas>
 			</KeyboardControls>

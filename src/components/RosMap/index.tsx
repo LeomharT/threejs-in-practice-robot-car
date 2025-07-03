@@ -134,6 +134,22 @@ export default function RosMap() {
 				label: 'Rotation Y',
 			},
 			Lift: button(() => {
+				if (state.current.car && state.current.car.current) {
+					console.log(state.current.car);
+					if (state.current.car.current) {
+						state.current.car.current.setTranslation(
+							{ x: 0, y: 3.5, z: 0 },
+							true
+						);
+						state.current.car.current.setRotation(
+							{ x: 0, y: 0, z: 0, w: 1 },
+							true
+						);
+						state.current.car.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
+						state.current.car.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
+					}
+				}
+
 				rotateBarrierRrm(-Math.PI / 2);
 				barrierRrmRigidBody.current?.setEnabled(false);
 			}),

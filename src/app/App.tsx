@@ -33,6 +33,7 @@ export default function App() {
 		parking: false,
 		begin: false,
 		lift: false,
+		fall: false,
 		path: null,
 		car: null,
 	});

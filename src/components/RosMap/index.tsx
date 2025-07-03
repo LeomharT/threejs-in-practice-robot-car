@@ -118,6 +118,8 @@ export default function RosMap() {
 
 	const [parking, setParking] = useState(false);
 
+	const [fall, setFall] = useState(false);
+
 	const barrierRrm = useRef<JSX.IntrinsicElements['group']>(null);
 
 	const barrierRrmRigidBody = useRef<RapierRigidBody>(null);
@@ -230,6 +232,8 @@ export default function RosMap() {
 
 	useFrame(() => {
 		if (parking !== state.current.parking) setParking(state.current.parking);
+
+		if (fall !== state.current.fall) setFall(state.current.fall);
 	});
 
 	useEffect(() => {
@@ -513,13 +517,19 @@ export default function RosMap() {
 				material={nodes.白线.material}
 				position={[-2.07, 0.025, 3.651]}
 			/>
-			<mesh
-				castShadow
-				receiveShadow
-				geometry={nodes.红苹果1.geometry}
-				material={materials.红色}
-				position={[0, 5.7, -4.1]}
-			/>
+			<RigidBody
+				type='dynamic'
+				colliders='ball'
+				enabledTranslations={[fall, fall, fall]}
+			>
+				<mesh
+					castShadow
+					receiveShadow
+					geometry={nodes.红苹果1.geometry}
+					material={materials.红色}
+					position={[0, 5.7, -4.1]}
+				/>
+			</RigidBody>
 			<mesh
 				castShadow
 				receiveShadow

@@ -16,7 +16,7 @@ export default function RobotCarScreen() {
 			>
 				<iframe
 					src='https://win11.blueedge.me/'
-					style={{ width: '1200px', height: '800px' }}
+					style={{ width: '1450px', height: '960px' }}
 				></iframe>
 			</Html>
 		</group>

@@ -132,10 +132,18 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 				box.current.lookAt(direction);
 
 				const q = new Quaternion().setFromEuler(box.current.rotation);
-				const extraQ = new Quaternion().setFromAxisAngle(
+
+				let extraQ = new Quaternion().setFromAxisAngle(
 					new Vector3(0, 1, 0),
 					-Math.PI / 2
 				);
+
+				if (progress > 0.9) {
+					extraQ = new Quaternion().setFromAxisAngle(
+						new Vector3(0, 1, 0),
+						Math.PI / 2
+					);
+				}
 
 				q.multiply(extraQ);
 
@@ -163,7 +171,8 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 			if (progress >= 0.17 && !state.current.lift) {
 				progress += 0;
 			} else {
-				progress += 0.001;
+				if (progress >= 0.9) progress += 0.0005;
+				else progress += 0.001;
 			}
 
 			set({ progress });
@@ -188,7 +197,7 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 		}
 
 		window.addEventListener('keypress', gogogo);
-	}, [begin]);
+	}, [begin, set, state]);
 
 	return (
 		<group {...props} ref={ref} dispose={null}>

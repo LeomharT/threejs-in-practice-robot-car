@@ -1,29 +1,28 @@
-import { Text } from '@react-three/drei';
+import { Html, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
+import type { message } from 'antd';
 import { gsap } from 'gsap';
-import { useContext, useEffect, useState, type JSX } from 'react';
+import { useContext, useEffect, useRef, useState, type JSX } from 'react';
 import { suspend } from 'suspend-react';
 import { DoubleSide, MeshStandardMaterial, Vector3 } from 'three';
 import { AppContext } from '../../app/contex';
 import BarrierBorder from '../BarrierBorder';
-
+import MessageApi from '../MessageApi';
 const medium = import('@pmndrs/assets/fonts/inter_medium.woff');
-const WIDTH = 3.5;
-const HEIGHT = 5.5;
+const WIDTH = 2.5;
+const HEIGHT = 3.5;
 const LINE_WIDTH = 0.2;
 
-export default function PathBeginSpot(props: JSX.IntrinsicElements['group']) {
+export default function PickAppleSpot(props: JSX.IntrinsicElements['group']) {
 	const [borderPosition, setBorderPosition] = useState(new Vector3(0, 0, -0.3));
 
-	const { state } = useContext(AppContext);
+	const messageApi = useRef<typeof message>(null);
 
-	const [begin, setBegin] = useState(false);
+	const { state, dispatch } = useContext(AppContext);
 
-	useFrame(() => {
-		if (begin !== state.current.begin) setBegin(state.current.begin);
-	});
+	const [pick, setPick] = useState(false);
 
-	function beginSpotBarrierUp() {
+	function pickAppleBarrierUp() {
 		gsap
 			.to(borderPosition, {
 				z: 1.2,
@@ -36,7 +35,7 @@ export default function PathBeginSpot(props: JSX.IntrinsicElements['group']) {
 			.play();
 	}
 
-	function beginSpotBarrierDown() {
+	function pickAppleBarrierDown() {
 		gsap
 			.to(borderPosition, {
 				z: -0.3,
@@ -49,21 +48,54 @@ export default function PathBeginSpot(props: JSX.IntrinsicElements['group']) {
 			.play();
 	}
 
+	useFrame(() => {
+		if (pick !== state.current.pick) setPick(state.current.pick);
+	});
+
 	useEffect(() => {
-		if (begin) {
-			beginSpotBarrierUp();
+		if (pick) {
+			pickAppleBarrierUp();
 		} else {
-			beginSpotBarrierDown();
+			pickAppleBarrierDown();
 		}
-	}, [begin]);
+
+		const pickingApple = (e: KeyboardEvent) => {
+			const KEY = 'APPLE_APCKET';
+
+			if (e.key === ' ' && pick) {
+				messageApi.current?.loading({
+					key: KEY,
+					content: 'Robot Arm Working...',
+				});
+
+				setTimeout(() => {
+					messageApi.current?.success({
+						key: KEY,
+						content: '🎉🎉🎉Success🎉🎉🎉',
+					});
+					dispatch({ type: 'fall', payload: true });
+				}, 2000);
+			}
+		};
+
+		window.addEventListener('keypress', pickingApple);
+
+		return () => {
+			window.removeEventListener('keypress', pickingApple);
+		};
+	}, [pick]);
 
 	return (
 		<group
 			{...props}
 			dispose={null}
-			position={[7.0, 0.01, 5.1]}
+			position={[-4.4, 0.01, -2.3]}
 			rotation-x={-Math.PI / 2}
+			rotation-z={-Math.PI / 2}
 		>
+			<Html center>
+				<MessageApi ref={messageApi} />
+			</Html>
 			<BarrierBorder
 				position={[0, 0, borderPosition.z]}
 				rotation-x={-Math.PI / 2}
@@ -72,18 +104,18 @@ export default function PathBeginSpot(props: JSX.IntrinsicElements['group']) {
 			/>
 			<Text
 				font={(suspend(medium) as any).default}
-				fontSize={1.2}
+				fontSize={0.9}
 				anchorY='top'
 				anchorX='left'
 				lineHeight={0.8}
-				position={[-0.45, 1.9, 0.01]}
+				position={[-0.45, 1.2, 0.01]}
 				rotation={[0, 0, Math.PI / 2]}
 				material-toneMapped={false}
 				material={new MeshStandardMaterial()}
 			>
-				🏁
+				🍎
 			</Text>
-			<mesh name='Begin_G' position-y={HEIGHT / 2}>
+			<mesh name='Pick_G' position-y={HEIGHT / 2}>
 				<planeGeometry args={[WIDTH, HEIGHT]} />
 				<meshStandardMaterial color={0xffffff} transparent opacity={0.0} />
 			</mesh>

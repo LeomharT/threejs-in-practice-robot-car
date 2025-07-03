@@ -530,13 +530,19 @@ export default function RosMap() {
 					position={[0, 5.7, -4.1]}
 				/>
 			</RigidBody>
-			<mesh
-				castShadow
-				receiveShadow
-				geometry={nodes.红苹果2.geometry}
-				material={materials.红色}
-				position={[-2.564, 6.3, -3]}
-			/>
+			<RigidBody
+				type='dynamic'
+				colliders='ball'
+				enabledTranslations={[fall, fall, fall]}
+			>
+				<mesh
+					castShadow
+					receiveShadow
+					geometry={nodes.红苹果2.geometry}
+					material={materials.红色}
+					position={[-2.564, 6.3, -3]}
+				/>
+			</RigidBody>
 			<mesh
 				castShadow
 				receiveShadow
@@ -544,13 +550,19 @@ export default function RosMap() {
 				material={materials.红色}
 				position={[-4.4, 5.56, -3.78]}
 			/>
-			<mesh
-				castShadow
-				receiveShadow
-				geometry={nodes.青苹果1.geometry}
-				material={materials.青色}
-				position={[-1.017, 5.7, -3.739]}
-			/>
+			<RigidBody
+				type='dynamic'
+				colliders='ball'
+				enabledTranslations={[fall, fall, fall]}
+			>
+				<mesh
+					castShadow
+					receiveShadow
+					geometry={nodes.青苹果1.geometry}
+					material={materials.青色}
+					position={[-1.017, 5.7, -3.739]}
+				/>
+			</RigidBody>
 			<mesh
 				castShadow
 				receiveShadow

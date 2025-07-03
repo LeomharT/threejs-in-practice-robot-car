@@ -3,7 +3,8 @@ body {
 	padding: 0;
 }
 
-#root {
+#root,
+.ant-app {
 	width: 100dvw;
 	height: 100dvh;
 }

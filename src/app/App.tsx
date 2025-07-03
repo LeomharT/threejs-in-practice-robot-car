@@ -11,6 +11,7 @@ import DrivePath from '../components/DrivePath';
 import Lights from '../components/Lights';
 import NavigationMesh from '../components/NavigationMesh';
 import PathBeginSpot from '../components/PathBeginSpot';
+import PickAppleSpot from '../components/PickAppleSpot';
 import RobotCars from '../components/RobotCar';
 import RosMap from '../components/RosMap';
 import Scenes from '../components/Scenes';
@@ -32,6 +33,7 @@ export default function App() {
 	const valueRef = useRef<State>({
 		parking: false,
 		begin: false,
+		pick: false,
 		lift: false,
 		fall: false,
 		path: null,
@@ -78,6 +80,7 @@ export default function App() {
 							}}
 						/>
 						<PathBeginSpot />
+						<PickAppleSpot />
 						<NavigationMesh />
 						<RosMap />
 						<RobotCars

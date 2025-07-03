@@ -135,11 +135,17 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 			const begin = !!intersect.filter((item) => item.object.name === 'Begin_G')
 				.length;
 
+			const pick = !!intersect.filter((item) => item.object.name === 'Pick_G')
+				.length;
+
 			if (parking !== state.current.parking) {
 				dispatch({ type: 'parking', payload: parking });
 			}
 			if (begin !== state.current.begin) {
 				dispatch({ type: 'begin', payload: begin });
+			}
+			if (pick !== state.current.pick) {
+				dispatch({ type: 'pick', payload: pick });
 			}
 		}
 

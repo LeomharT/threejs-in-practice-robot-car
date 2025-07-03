@@ -159,27 +159,35 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 		let progress = 0;
 		let animation;
 
-		function move() {
-			progress += 0.001;
+		async function move() {
+			if (progress >= 0.17 && !state.current.lift) {
+				progress += 0;
+			} else {
+				progress += 0.001;
+			}
 
 			set({ progress });
 
 			animation = requestAnimationFrame(move);
 
-			if (progress >= 1) {
+			if (progress >= 1.0) {
 				cancelAnimationFrame(animation);
 			}
 		}
 
-		window.addEventListener('keypress', (e) => {
+		function gogogo(e: KeyboardEvent) {
 			if (e.code === 'Enter') {
 				if (begin) {
 					progress = 0;
 					set({ progress });
 					move();
 				}
+
+				window.removeEventListener('keypress', gogogo);
 			}
-		});
+		}
+
+		window.addEventListener('keypress', gogogo);
 	}, [begin]);
 
 	return (

@@ -114,7 +114,7 @@ export default function RosMap() {
 		'/assets/models/ros-car/ros-car-map.glb'
 	) as GLTFResult & ObjectMap;
 
-	const { state } = useContext(AppContext);
+	const { state, dispatch } = useContext(AppContext);
 
 	const [parking, setParking] = useState(false);
 
@@ -134,27 +134,16 @@ export default function RosMap() {
 				label: 'Rotation Y',
 			},
 			Lift: button(() => {
-				if (state.current.car && state.current.car.current) {
-					if (state.current.car.current) {
-						state.current.car.current.setTranslation(
-							{ x: 0, y: 3.5, z: 0 },
-							true
-						);
-						state.current.car.current.setRotation(
-							{ x: 0, y: 0, z: 0, w: 1 },
-							true
-						);
-						state.current.car.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
-						state.current.car.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
-					}
-				}
-
 				rotateBarrierRrm(-Math.PI / 2);
 				barrierRrmRigidBody.current?.setEnabled(false);
+				setTimeout(() => {
+					dispatch({ type: 'lift', payload: true });
+				}, 1200);
 			}),
 			Down: button(() => {
 				rotateBarrierRrm(0);
 				barrierRrmRigidBody.current?.setEnabled(true);
+				dispatch({ type: 'lift', payload: false });
 			}),
 		}),
 	}));

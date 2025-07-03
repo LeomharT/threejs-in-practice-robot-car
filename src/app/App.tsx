@@ -32,6 +32,7 @@ export default function App() {
 	const valueRef = useRef<State>({
 		parking: false,
 		begin: false,
+		lift: false,
 		path: null,
 		car: null,
 	});

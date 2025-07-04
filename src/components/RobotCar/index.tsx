@@ -27,7 +27,6 @@ import {
 import type { GLTF } from 'three-stdlib';
 import { AppContext } from '../../app/contex';
 import { _Controls } from '../../app/keyboard';
-import RobotCarScreen from '../RobotCarScreen';
 import type { RobotCarProps } from './type';
 
 type GLTFResult = GLTF & {
@@ -272,7 +271,7 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 				angularDamping={25}
 				linearDamping={linearDamping}
 			>
-				<RobotCarScreen />
+				{/* <RobotCarScreen /> */}
 				<group {...props} dispose={null}>
 					<group scale={0.096}>
 						<mesh

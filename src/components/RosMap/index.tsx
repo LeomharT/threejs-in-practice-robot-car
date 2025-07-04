@@ -1,6 +1,7 @@
 import { useGLTF } from '@react-three/drei';
 import { useFrame, type ObjectMap } from '@react-three/fiber';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
+import { message } from 'antd';
 import gsap from 'gsap';
 import { button, folder, useControls } from 'leva';
 import { useContext, useEffect, useRef, useState, type JSX } from 'react';
@@ -16,6 +17,7 @@ import {
 import type { GLTF } from 'three-stdlib';
 import { AppContext } from '../../app/contex';
 import BarrierBorder from '../BarrierBorder';
+import MessageApi from '../MessageApi';
 
 type GLTFResult = GLTF & {
 	nodes: {
@@ -114,6 +116,8 @@ export default function RosMap() {
 		'/assets/models/ros-car/ros-car-map.glb'
 	) as GLTFResult & ObjectMap;
 
+	const messageApi = useRef<typeof message>(null);
+
 	const { state, dispatch } = useContext(AppContext);
 
 	const [parking, setParking] = useState(false);
@@ -209,6 +213,8 @@ export default function RosMap() {
 	}
 
 	function handleOnParkingClick() {
+		messageApi.current?.loading({ content: 'Path finding...' });
+
 		const timeLine = gsap.timeline();
 		timeLine.to(borderPosition, {
 			y: -0.2,
@@ -246,6 +252,7 @@ export default function RosMap() {
 
 	return (
 		<group dispose={null}>
+			<MessageApi ref={messageApi} />
 			<mesh
 				castShadow
 				receiveShadow

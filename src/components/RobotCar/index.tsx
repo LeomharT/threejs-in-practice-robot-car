@@ -4,7 +4,6 @@ import { RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { button, useControls } from 'leva';
 import {
 	forwardRef,
-	useContext,
 	useEffect,
 	useImperativeHandle,
 	useRef,
@@ -24,8 +23,8 @@ import {
 	Vector3,
 } from 'three';
 import type { GLTF } from 'three-stdlib';
-import { AppContext } from '../../app/contex';
 import { _Controls } from '../../app/keyboard';
+import useRosMapStore from '../../hooks/useRosMapStore';
 import type { RobotCarProps } from './type';
 
 type GLTFResult = GLTF & {
@@ -85,6 +84,8 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 
 		const { scene } = useThree();
 
+		const [, set, get] = useRosMapStore();
+
 		const raycaster = useRef(new Raycaster());
 
 		const carRigidBody = useRef<RapierRigidBody>(null);
@@ -99,8 +100,6 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 		);
 
 		const [linearDamping, setLinearDamping] = useState(5.0);
-
-		const { state, dispatch } = useContext(AppContext);
 
 		const forwardPressed = useKeyboardControls(
 			(state) => state[_Controls.forward]
@@ -143,15 +142,11 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 			const pick = !!intersect.filter((item) => item.object.name === 'Pick_G')
 				.length;
 
-			if (parking !== state.current.parking) {
-				dispatch({ type: 'parking', payload: parking });
-			}
-			if (begin !== state.current.begin) {
-				dispatch({ type: 'begin', payload: begin });
-			}
-			if (pick !== state.current.pick) {
-				dispatch({ type: 'pick', payload: pick });
-			}
+			if (parking !== get('parking')) set('parking', parking);
+
+			if (begin !== get('begin')) set('begin', begin);
+
+			if (pick !== get('pick')) set('pick', pick);
 		}
 
 		const { angvel, speed } = useControls('🚘 Robot Car', {

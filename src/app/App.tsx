@@ -26,16 +26,12 @@ export default function App() {
 			{ name: _Controls.left, keys: ['ArrowLeft', 'KeyA'] },
 			{ name: _Controls.right, keys: ['ArrowRight', 'KeyD'] },
 			{ name: _Controls.jump, keys: ['Space'] },
+			{ name: _Controls.enter, keys: ['Enter'] },
 		],
 		[]
 	);
 
 	const valueRef = useRef<State>({
-		parking: false,
-		begin: false,
-		pick: false,
-		lift: false,
-		fall: false,
 		path: null,
 		car: null,
 	});

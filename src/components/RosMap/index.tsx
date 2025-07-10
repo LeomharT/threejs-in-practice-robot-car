@@ -1,5 +1,5 @@
 import { useGLTF } from '@react-three/drei';
-import { useFrame, type ObjectMap } from '@react-three/fiber';
+import { type ObjectMap } from '@react-three/fiber';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { message } from 'antd';
 import gsap from 'gsap';
@@ -16,6 +16,7 @@ import {
 } from 'three';
 import type { GLTF } from 'three-stdlib';
 import { AppContext } from '../../app/contex';
+import useRosMapStore from '../../hooks/useRosMapStore';
 import BarrierBorder from '../BarrierBorder';
 import MessageApi from '../MessageApi';
 
@@ -118,9 +119,9 @@ export default function RosMap() {
 
 	const messageApi = useRef<typeof message>(null);
 
-	const { state, dispatch } = useContext(AppContext);
+	const { dispatch } = useContext(AppContext);
 
-	const [parking, setParking] = useState(false);
+	const [subscribe, , get] = useRosMapStore();
 
 	const [fall, setFall] = useState(false);
 
@@ -201,14 +202,14 @@ export default function RosMap() {
 	function handleOnPointerEnter() {
 		document.body.style.cursor = 'pointer';
 
-		if (parking) return;
+		if (get('parking')) return;
 		parkingSpotBarrierUp();
 	}
 
 	function handleOnPointerOut() {
 		document.body.style.cursor = 'default';
 
-		if (parking) return;
+		if (get('parking')) return;
 		parkingSpotBarrierDown();
 	}
 
@@ -236,19 +237,16 @@ export default function RosMap() {
 		timeLine.play();
 	}
 
-	useFrame(() => {
-		if (parking !== state.current.parking) setParking(state.current.parking);
-
-		if (fall !== state.current.fall) setFall(state.current.fall);
-	});
+	useEffect(() => {
+		return subscribe('parking', (val) => {
+			if (val) parkingSpotBarrierUp();
+			else parkingSpotBarrierDown();
+		});
+	}, []);
 
 	useEffect(() => {
-		if (parking) {
-			parkingSpotBarrierUp();
-		} else {
-			parkingSpotBarrierDown();
-		}
-	}, [parking]);
+		return subscribe('fall', setFall);
+	}, []);
 
 	return (
 		<group dispose={null}>

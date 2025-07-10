@@ -1,6 +1,7 @@
 import type { RapierRigidBody } from '@react-three/rapier';
 import { createContext, type ActionDispatch, type RefObject } from 'react';
 import type { DrivePathRef } from '../components/DrivePath/type';
+import { createStore } from '../utils/signalStore';
 
 export const actionTypes = [
 	'parking',
@@ -16,14 +17,25 @@ export type Action = {
 };
 
 export type State = {
+	path: DrivePathRef | null;
+	car: RefObject<RapierRigidBody | null> | null;
+};
+
+export type RosMapStore = {
 	parking: boolean;
 	begin: boolean;
 	lift: boolean;
 	pick: boolean;
 	fall: boolean;
-	path: DrivePathRef | null;
-	car: RefObject<RapierRigidBody | null> | null;
 };
+
+export const rosMapStore = createStore<RosMapStore>({
+	parking: false,
+	begin: false,
+	pick: false,
+	lift: false,
+	fall: false,
+});
 
 export type AppContextValue = {
 	state: RefObject<State>;

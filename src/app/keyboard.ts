@@ -4,6 +4,7 @@ export const _Controls = {
 	left: 'left',
 	right: 'right',
 	jump: 'jump',
+	enter: 'enter',
 } as const;
 
 export type Controls = keyof typeof _Controls;

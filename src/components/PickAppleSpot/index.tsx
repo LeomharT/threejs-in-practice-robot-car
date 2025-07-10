@@ -1,11 +1,11 @@
-import { Html, Text } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { Html, Text, useKeyboardControls } from '@react-three/drei';
 import type { message } from 'antd';
 import { gsap } from 'gsap';
-import { useContext, useEffect, useRef, useState, type JSX } from 'react';
+import { useEffect, useRef, useState, type JSX } from 'react';
 import { suspend } from 'suspend-react';
 import { DoubleSide, MeshStandardMaterial, Vector3 } from 'three';
-import { AppContext } from '../../app/contex';
+import { _Controls } from '../../app/keyboard';
+import useRosMapStore from '../../hooks/useRosMapStore';
 import BarrierBorder from '../BarrierBorder';
 import MessageApi from '../MessageApi';
 const medium = import('@pmndrs/assets/fonts/inter_medium.woff');
@@ -18,9 +18,9 @@ export default function PickAppleSpot(props: JSX.IntrinsicElements['group']) {
 
 	const messageApi = useRef<typeof message>(null);
 
-	const { state, dispatch } = useContext(AppContext);
+	const enterKeyPress = useKeyboardControls((state) => state[_Controls.enter]);
 
-	const [pick, setPick] = useState(false);
+	const [sub, set, get] = useRosMapStore();
 
 	function pickAppleBarrierUp() {
 		gsap
@@ -48,42 +48,34 @@ export default function PickAppleSpot(props: JSX.IntrinsicElements['group']) {
 			.play();
 	}
 
-	useFrame(() => {
-		if (pick !== state.current.pick) setPick(state.current.pick);
-	});
-
 	useEffect(() => {
-		if (pick) {
-			pickAppleBarrierUp();
-		} else {
-			pickAppleBarrierDown();
-		}
+		const KEY = 'APPLE_APCKET';
+		const pick = get('pick');
 
-		const pickingApple = (e: KeyboardEvent) => {
-			const KEY = 'APPLE_APCKET';
+		if (pick && enterKeyPress) {
+			messageApi.current?.loading({
+				key: KEY,
+				content: 'Robot Arm Working...',
+				duration: 2000,
+			});
 
-			if (e.key === ' ' && pick) {
-				messageApi.current?.loading({
+			setTimeout(() => {
+				messageApi.current?.success({
 					key: KEY,
-					content: 'Robot Arm Working...',
+					content: '🎉🎉🎉Success🎉🎉🎉',
 				});
 
-				setTimeout(() => {
-					messageApi.current?.success({
-						key: KEY,
-						content: '🎉🎉🎉Success🎉🎉🎉',
-					});
-					dispatch({ type: 'fall', payload: true });
-				}, 2000);
-			}
-		};
+				set('fall', true);
+			}, 2000);
+		}
 
-		window.addEventListener('keypress', pickingApple);
+		const off = sub('pick', (val) => {
+			if (val) pickAppleBarrierUp();
+			else pickAppleBarrierDown();
+		});
 
-		return () => {
-			window.removeEventListener('keypress', pickingApple);
-		};
-	}, [pick]);
+		return off;
+	}, [enterKeyPress]);
 
 	return (
 		<group

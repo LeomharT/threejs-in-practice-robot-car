@@ -39,8 +39,8 @@ export default function PickAppleSpot(props: JSX.IntrinsicElements['group']) {
 		gsap
 			.to(borderPosition, {
 				z: -0.3,
-				ease: 'back.out(5)',
-				duration: 0.8,
+				ease: 'back.in(2)',
+				duration: 0.4,
 				onUpdate() {
 					setBorderPosition(borderPosition.clone());
 				},

@@ -17,12 +17,11 @@ import {
 	Group,
 	Mesh,
 	MeshBasicMaterial,
+	MeshPhysicalMaterial,
+	MeshStandardMaterial,
 	Quaternion,
 	Raycaster,
 	Vector3,
-	type MeshPhysicalMaterial,
-	type MeshStandardMaterial,
-	type Object3D,
 } from 'three';
 import type { GLTF } from 'three-stdlib';
 import { AppContext } from '../../app/contex';
@@ -31,41 +30,47 @@ import type { RobotCarProps } from './type';
 
 type GLTFResult = GLTF & {
 	nodes: {
+		'1___5': Mesh;
+		'1___5_1': Mesh;
+		'2': Mesh;
+		'2_1': Mesh;
+		'?D3y__17': Mesh;
+		'?D3y__17_1': Mesh;
+		'?D3y__17_2': Mesh;
+		'?D3y__17_3': Mesh;
+		'?D3y__17_4': Mesh;
 		Scene: Group;
+		侧面按钮: Group;
+		侧面选项: Mesh;
 		前轮1: Mesh;
 		前轮2: Mesh;
+		右灯: Mesh;
 		后轮1: Mesh;
 		后轮2: Mesh;
 		外壳: Group;
-		外壳_1: Mesh;
-		外壳_2: Mesh;
-		外壳_3: Mesh;
-		外壳_4: Mesh;
-		外壳_5: Mesh;
-		外壳_6: Mesh;
-		外壳_7: Mesh;
-		外壳_8: Mesh;
+		左灯: Mesh;
 		底座: Group;
-		'新大陆时代科技LOGO-02svg': Object3D;
 		柱体001: Mesh;
 		柱体001_1: Mesh;
 		柱体003: Mesh;
 		柱体003_1: Mesh;
+		红色: Mesh;
 		部件1: Mesh;
 		部件2: Group;
 		部件3: Mesh;
 		部件4: Mesh;
 		部件5: Mesh;
 		部件6: Mesh;
+		顶部: Group;
 	};
 	materials: {
 		发光: MeshPhysicalMaterial;
 		塑料: MeshStandardMaterial;
-		机械臂: MeshStandardMaterial;
 		材质: MeshStandardMaterial;
 		灰: MeshStandardMaterial;
 		红: MeshStandardMaterial;
 		轮胎: MeshStandardMaterial;
+		'轮胎.003': MeshStandardMaterial;
 		金属灰: MeshStandardMaterial;
 		金属白: MeshStandardMaterial;
 		金属黑: MeshStandardMaterial;
@@ -271,58 +276,66 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 				angularDamping={25}
 				linearDamping={linearDamping}
 			>
-				{/* <RobotCarScreen /> */}
 				<group {...props} dispose={null}>
-					<group scale={0.096}>
+					<mesh
+						name='红色'
+						castShadow
+						receiveShadow
+						geometry={nodes.红色.geometry}
+						material={materials.红}
+						scale={0.096}
+					/>
+					<group name='外壳' scale={0.096}>
 						<mesh
+							name='?D3y__17'
 							castShadow
 							receiveShadow
-							geometry={nodes.外壳_1.geometry}
+							geometry={nodes['?D3y__17'].geometry}
 							material={materials.塑料}
 						/>
 						<mesh
+							name='?D3y__17_1'
 							castShadow
 							receiveShadow
-							geometry={nodes.外壳_2.geometry}
+							geometry={nodes['?D3y__17_1'].geometry}
 							material={materials.金属灰}
 						/>
 						<mesh
+							name='?D3y__17_2'
 							castShadow
 							receiveShadow
-							geometry={nodes.外壳_3.geometry}
+							geometry={nodes['?D3y__17_2'].geometry}
 							material={materials.金属黑}
 						/>
 						<mesh
+							name='?D3y__17_3'
 							castShadow
 							receiveShadow
-							geometry={nodes.外壳_4.geometry}
+							geometry={nodes['?D3y__17_3'].geometry}
 							material={materials.灰}
 						/>
 						<mesh
+							name='?D3y__17_4'
 							castShadow
 							receiveShadow
-							geometry={nodes.外壳_5.geometry}
+							geometry={nodes['?D3y__17_4'].geometry}
 							material={materials.金属白}
 						/>
-						<mesh
-							castShadow
-							receiveShadow
-							geometry={nodes.外壳_6.geometry}
-							material={materials.发光}
-						/>
-						<mesh
-							castShadow
-							receiveShadow
-							geometry={nodes.外壳_7.geometry}
-							material={materials.材质}
-						/>
-						<mesh
-							castShadow
-							receiveShadow
-							geometry={nodes.外壳_8.geometry}
-							material={materials.红}
-						/>
 					</group>
+					<mesh
+						name='左灯'
+						castShadow
+						receiveShadow
+						geometry={nodes.左灯.geometry}
+						scale={0.096}
+					/>
+					<mesh
+						name='右灯'
+						castShadow
+						receiveShadow
+						geometry={nodes.右灯.geometry}
+						scale={0.096}
+					/>
 					<group ref={wheels} dispose={null}>
 						<mesh
 							name='前轮左'
@@ -361,14 +374,56 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 							scale={0.094}
 						/>
 					</group>
-					<group position={[-0.187, 1.966, 0]}>
+					<mesh
+						name='侧面选项'
+						castShadow
+						receiveShadow
+						geometry={nodes.侧面选项.geometry}
+						material={materials.灰}
+						scale={0.096}
+					/>
+					<group name='侧面按钮' scale={0.096}>
 						<mesh
+							name='1___5'
+							castShadow
+							receiveShadow
+							geometry={nodes['1___5'].geometry}
+							material={materials.金属黑}
+						/>
+						<mesh
+							name='1___5_1'
+							castShadow
+							receiveShadow
+							geometry={nodes['1___5_1'].geometry}
+							material={materials.材质}
+						/>
+					</group>
+					<group name='顶部' scale={0.096}>
+						<mesh
+							name='2'
+							castShadow
+							receiveShadow
+							geometry={nodes['2'].geometry}
+							material={materials.金属白}
+						/>
+						<mesh
+							name='2_1'
+							castShadow
+							receiveShadow
+							geometry={nodes['2_1'].geometry}
+							material={materials.金属黑}
+						/>
+					</group>
+					<group name='底座' position={[-0.187, 1.966, 0]}>
+						<mesh
+							name='柱体001'
 							castShadow
 							receiveShadow
 							geometry={nodes.柱体001.geometry}
 							material={materials.灰}
 						/>
 						<mesh
+							name='柱体001_1'
 							castShadow
 							receiveShadow
 							geometry={nodes.柱体001_1.geometry}
@@ -376,58 +431,69 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 						/>
 					</group>
 					<mesh
+						name='部件6'
 						castShadow
 						receiveShadow
 						geometry={nodes.部件6.geometry}
-						material={materials.机械臂}
+						material={materials.金属白}
 						position={[-0.187, 2.121, 0.007]}
-					/>
-					<group
-						position={[0.504, 4.519, 0.007]}
-						rotation={[Math.PI / 2, 0, 0]}
 					>
 						<mesh
+							name='部件5'
 							castShadow
 							receiveShadow
-							geometry={nodes.柱体003.geometry}
-							material={materials.机械臂}
-						/>
-						<mesh
-							castShadow
-							receiveShadow
-							geometry={nodes.柱体003_1.geometry}
-							material={materials.金属黑}
-						/>
-					</group>
-					<mesh
-						castShadow
-						receiveShadow
-						geometry={nodes.部件3.geometry}
-						material={materials.机械臂}
-						position={[0.165, 4.174, 0.007]}
-					/>
-					<mesh
-						castShadow
-						receiveShadow
-						geometry={nodes.部件5.geometry}
-						material={materials.机械臂}
-						position={[0.155, 2.706, 0.007]}
-					/>
-					<mesh
-						castShadow
-						receiveShadow
-						geometry={nodes.部件4.geometry}
-						material={materials.机械臂}
-						position={[0.152, 3.508, 0.007]}
-					/>
-					<mesh
-						castShadow
-						receiveShadow
-						geometry={nodes.部件1.geometry}
-						material={materials.金属灰}
-						position={[0.509, 4.758, 0.385]}
-						rotation={[Math.PI / 2, 0, 0]}
-					/>
+							geometry={nodes.部件5.geometry}
+							material={materials.金属白}
+							position={[0.342, 0.586, 0]}
+						>
+							<mesh
+								name='部件4'
+								castShadow
+								receiveShadow
+								geometry={nodes.部件4.geometry}
+								material={materials.金属白}
+								position={[-0.461, 0.811, 0]}
+							>
+								<mesh
+									name='部件3'
+									castShadow
+									receiveShadow
+									geometry={nodes.部件3.geometry}
+									material={materials.金属白}
+									position={[0.009, 0.667, -0.008]}
+								>
+									<group
+										name='部件2'
+										position={[0.802, 0.335, 0.008]}
+										rotation={[Math.PI / 2, 0, 0]}
+									>
+										<mesh
+											name='柱体003'
+											castShadow
+											receiveShadow
+											geometry={nodes.柱体003.geometry}
+											material={materials.金属白}
+										/>
+										<mesh
+											name='柱体003_1'
+											castShadow
+											receiveShadow
+											geometry={nodes.柱体003_1.geometry}
+											material={materials.金属黑}
+										/>
+										<mesh
+											name='部件1'
+											castShadow
+											receiveShadow
+											geometry={nodes.部件1.geometry}
+											material={materials.金属灰}
+											position={[0.004, 0.378, -0.238]}
+										/>
+									</group>
+								</mesh>
+							</mesh>
+						</mesh>
+					</mesh>
 				</group>
 			</RigidBody>
 		);

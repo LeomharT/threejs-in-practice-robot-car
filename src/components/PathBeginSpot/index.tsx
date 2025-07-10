@@ -39,9 +39,9 @@ export default function PathBeginSpot(props: JSX.IntrinsicElements['group']) {
 	function beginSpotBarrierDown() {
 		gsap
 			.to(borderPosition, {
-				z: -0.3,
-				ease: 'back.out(5)',
-				duration: 0.8,
+				z: -0.2,
+				ease: 'back.in(2)',
+				duration: 0.4,
 				onUpdate() {
 					setBorderPosition(borderPosition.clone());
 				},
@@ -72,16 +72,16 @@ export default function PathBeginSpot(props: JSX.IntrinsicElements['group']) {
 			/>
 			<Text
 				font={(suspend(medium) as any).default}
-				fontSize={1.2}
+				fontSize={2.0}
 				anchorY='top'
 				anchorX='left'
 				lineHeight={0.8}
-				position={[-0.45, 1.9, 0.01]}
-				rotation={[0, 0, Math.PI / 2]}
+				position={[0.7, 1.9, 0.01]}
+				rotation={[0, 0, Math.PI]}
 				material-toneMapped={false}
 				material={new MeshStandardMaterial()}
 			>
-				🏁
+				S
 			</Text>
 			<mesh name='Begin_G' position-y={HEIGHT / 2}>
 				<planeGeometry args={[WIDTH, HEIGHT]} />

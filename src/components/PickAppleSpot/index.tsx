@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type JSX } from 'react';
 import { suspend } from 'suspend-react';
 import { DoubleSide, MeshStandardMaterial, Vector3 } from 'three';
 import { _Controls } from '../../app/keyboard';
-import useRosMapStore from '../../hooks/useRosMapStore';
+import { useRosMapStore } from '../../hooks/useRosMapStore';
 import BarrierBorder from '../BarrierBorder';
 import MessageApi from '../MessageApi';
 const medium = import('@pmndrs/assets/fonts/inter_medium.woff');
@@ -20,7 +20,7 @@ export default function PickAppleSpot(props: JSX.IntrinsicElements['group']) {
 
 	const enterKeyPress = useKeyboardControls((state) => state[_Controls.enter]);
 
-	const [sub, set, get] = useRosMapStore();
+	const { pick, dispatch } = useRosMapStore((state) => state);
 
 	function pickAppleBarrierUp() {
 		gsap
@@ -50,7 +50,6 @@ export default function PickAppleSpot(props: JSX.IntrinsicElements['group']) {
 
 	useEffect(() => {
 		const KEY = 'APPLE_APCKET';
-		const pick = get('pick');
 
 		if (pick && enterKeyPress) {
 			messageApi.current?.loading({
@@ -64,18 +63,13 @@ export default function PickAppleSpot(props: JSX.IntrinsicElements['group']) {
 					key: KEY,
 					content: '🎉🎉🎉Success🎉🎉🎉',
 				});
-
-				set('fall', true);
+				dispatch('fall', true);
 			}, 2000);
 		}
 
-		const off = sub('pick', (val) => {
-			if (val) pickAppleBarrierUp();
-			else pickAppleBarrierDown();
-		});
-
-		return off;
-	}, [enterKeyPress]);
+		if (pick) pickAppleBarrierUp();
+		else pickAppleBarrierDown();
+	}, [enterKeyPress, pick]);
 
 	return (
 		<group

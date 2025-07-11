@@ -1,10 +1,9 @@
 import { Text } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
 import { gsap } from 'gsap';
-import { useContext, useEffect, useState, type JSX } from 'react';
+import { useEffect, useState, type JSX } from 'react';
 import { suspend } from 'suspend-react';
 import { DoubleSide, MeshStandardMaterial, Vector3 } from 'three';
-import { AppContext } from '../../app/contex';
+import { useRosMapStore } from '../../hooks/useRosMapStore';
 import BarrierBorder from '../BarrierBorder';
 
 const medium = import('@pmndrs/assets/fonts/inter_medium.woff');
@@ -15,13 +14,7 @@ const LINE_WIDTH = 0.2;
 export default function PathBeginSpot(props: JSX.IntrinsicElements['group']) {
 	const [borderPosition, setBorderPosition] = useState(new Vector3(0, 0, -0.3));
 
-	const { state } = useContext(AppContext);
-
-	const [begin, setBegin] = useState(false);
-
-	useFrame(() => {
-		if (begin !== state.current.begin) setBegin(state.current.begin);
-	});
+	const begin = useRosMapStore((state) => state.begin);
 
 	function beginSpotBarrierUp() {
 		gsap

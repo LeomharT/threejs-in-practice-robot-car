@@ -4,7 +4,7 @@ import { RapierRigidBody, RigidBody } from '@react-three/rapier';
 import { message } from 'antd';
 import gsap from 'gsap';
 import { button, folder, useControls } from 'leva';
-import { useContext, useEffect, useRef, useState, type JSX } from 'react';
+import { useEffect, useRef, useState, type JSX } from 'react';
 import {
 	BoxGeometry,
 	Euler,
@@ -15,8 +15,7 @@ import {
 	type MeshStandardMaterial,
 } from 'three';
 import type { GLTF } from 'three-stdlib';
-import { AppContext } from '../../app/contex';
-import useRosMapStore from '../../hooks/useRosMapStore';
+import { useRosMapStore } from '../../hooks/useRosMapStore';
 import BarrierBorder from '../BarrierBorder';
 import MessageApi from '../MessageApi';
 
@@ -119,11 +118,7 @@ export default function RosMap() {
 
 	const messageApi = useRef<typeof message>(null);
 
-	const { dispatch } = useContext(AppContext);
-
-	const [subscribe, , get] = useRosMapStore();
-
-	const [fall, setFall] = useState(false);
+	const { parking, fall, dispatch } = useRosMapStore((state) => state);
 
 	const barrierRrm = useRef<JSX.IntrinsicElements['group']>(null);
 
@@ -144,13 +139,13 @@ export default function RosMap() {
 				rotateBarrierRrm(-Math.PI / 2);
 				barrierRrmRigidBody.current?.setEnabled(false);
 				setTimeout(() => {
-					dispatch({ type: 'lift', payload: true });
+					dispatch('lift', true);
 				}, 1200);
 			}),
 			Down: button(() => {
 				rotateBarrierRrm(0);
 				barrierRrmRigidBody.current?.setEnabled(true);
-				dispatch({ type: 'lift', payload: false });
+				dispatch('lift', false);
 			}),
 		}),
 	}));
@@ -202,14 +197,14 @@ export default function RosMap() {
 	function handleOnPointerEnter() {
 		document.body.style.cursor = 'pointer';
 
-		if (get('parking')) return;
+		if (parking) return;
 		parkingSpotBarrierUp();
 	}
 
 	function handleOnPointerOut() {
 		document.body.style.cursor = 'default';
 
-		if (get('parking')) return;
+		if (parking) return;
 		parkingSpotBarrierDown();
 	}
 
@@ -238,15 +233,12 @@ export default function RosMap() {
 	}
 
 	useEffect(() => {
-		return subscribe('parking', (val) => {
-			if (val) parkingSpotBarrierUp();
-			else parkingSpotBarrierDown();
-		});
-	}, []);
-
-	useEffect(() => {
-		return subscribe('fall', setFall);
-	}, []);
+		if (parking) {
+			parkingSpotBarrierUp();
+		} else {
+			parkingSpotBarrierDown();
+		}
+	}, [parking]);
 
 	return (
 		<group dispose={null}>

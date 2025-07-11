@@ -1,13 +1,11 @@
-import { useFrame } from '@react-three/fiber';
+import { useKeyboardControls } from '@react-three/drei';
 import { RapierRigidBody } from '@react-three/rapier';
 import { useControls } from 'leva';
 import {
 	forwardRef,
-	useContext,
 	useEffect,
 	useImperativeHandle,
 	useRef,
-	useState,
 	type JSX,
 } from 'react';
 import {
@@ -24,7 +22,9 @@ import {
 	Quaternion,
 	Vector3,
 } from 'three';
-import { AppContext } from '../../app/contex';
+import { _Controls } from '../../app/keyboard';
+import { useRosMapStore } from '../../hooks/useRosMapStore';
+import useScene from '../../hooks/useScene';
 import type { DrivePathRef, DriveProps } from './type';
 
 const initialPoints = [
@@ -42,13 +42,21 @@ const initialPoints = [
 const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 	const ref = useRef<JSX.IntrinsicElements['group']>(null);
 
-	const { state } = useContext(AppContext);
+	const status = useRef({
+		lift: false,
+	});
 
 	const curve = useRef<CatmullRomCurve3>(null);
+
+	const { car } = useScene();
 
 	const box = useRef(
 		new Mesh(new BoxGeometry(2, 2, 2), new MeshBasicMaterial({ color: 'red' }))
 	);
+
+	const { begin, lift } = useRosMapStore((state) => state);
+
+	const enterPressed = useKeyboardControls((state) => state[_Controls.enter]);
 
 	const [{ visible, progress }, set] = useControls('🛣️ Path', () => ({
 		visible: false,
@@ -59,12 +67,6 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 			max: 1,
 		},
 	}));
-
-	const [begin, setBegin] = useState(false);
-
-	useFrame(() => {
-		if (begin !== state.current.begin) setBegin(state.current.begin);
-	});
 
 	useImperativeHandle(
 		_ref,
@@ -117,7 +119,7 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 		if (
 			curve.current instanceof CatmullRomCurve3 &&
 			box.current instanceof Mesh &&
-			state.current.car?.current instanceof RapierRigidBody
+			car?.current instanceof RapierRigidBody
 		) {
 			if (curve.current.getLength()) {
 				const position = curve.current.getPointAt(progress);
@@ -147,14 +149,8 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 
 				q.multiply(extraQ);
 
-				state.current.car.current.setTranslation(
-					box.current.position.clone(),
-					true
-				);
-				state.current.car.current.setRotation(
-					{ x: q.x, y: q.y, z: q.z, w: q.w },
-					true
-				);
+				car?.current.setTranslation(box.current.position.clone(), true);
+				car?.current.setRotation({ x: q.x, y: q.y, z: q.z, w: q.w }, true);
 			}
 		}
 	}
@@ -164,11 +160,15 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 	}, [progress]);
 
 	useEffect(() => {
+		status.current.lift = lift;
+	}, [lift]);
+
+	useEffect(() => {
 		let progress = 0;
 		let animation;
 
 		async function move() {
-			if (progress >= 0.17 && !state.current.lift) {
+			if (progress >= 0.17 && progress <= 0.2 && !status.current.lift) {
 				progress += 0;
 			} else {
 				if (progress >= 0.9) progress += 0.0005;
@@ -184,20 +184,12 @@ const DrivePath = forwardRef<DrivePathRef>((props: DriveProps, _ref) => {
 			}
 		}
 
-		function gogogo(e: KeyboardEvent) {
-			if (e.code === 'Enter') {
-				if (begin) {
-					progress = 0;
-					set({ progress });
-					move();
-				}
-
-				window.removeEventListener('keypress', gogogo);
-			}
+		if (enterPressed && begin) {
+			progress = 0;
+			set({ progress });
+			move();
 		}
-
-		window.addEventListener('keypress', gogogo);
-	}, [begin, set, state]);
+	}, [begin, enterPressed, set]);
 
 	return (
 		<group {...props} ref={ref} dispose={null}>

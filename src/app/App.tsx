@@ -15,7 +15,7 @@ import PickAppleSpot from '../components/PickAppleSpot';
 import RobotCars from '../components/RobotCar';
 import RosMap from '../components/RosMap';
 import Scenes from '../components/Scenes';
-import { AppContext, type Action, type State } from './contex';
+import { AppContext, type State } from './contex';
 import { _Controls, type Controls } from './keyboard';
 
 export default function App() {
@@ -31,20 +31,14 @@ export default function App() {
 		[]
 	);
 
-	const valueRef = useRef<State>({
+	const ref = useRef<State>({
 		path: null,
 		car: null,
+		lift: false,
 	});
 
-	function dispatch(action: Action) {
-		valueRef.current = {
-			...valueRef.current,
-			[action.type]: action.payload,
-		};
-	}
-
 	return (
-		<AppContext value={{ state: valueRef, dispatch }}>
+		<AppContext value={{ state: ref }}>
 			<KeyboardControls map={map}>
 				<Canvas
 					frameloop='always'
@@ -71,8 +65,8 @@ export default function App() {
 					<Lights />
 					<Scenes>
 						<DrivePath
-							ref={(ref) => {
-								valueRef.current.path = ref;
+							ref={(_ref) => {
+								ref.current.path = _ref;
 							}}
 						/>
 						<PathBeginSpot />
@@ -80,8 +74,8 @@ export default function App() {
 						<NavigationMesh />
 						<RosMap />
 						<RobotCars
-							ref={(ref) => {
-								valueRef.current.car = ref;
+							ref={(_ref) => {
+								ref.current.car = _ref;
 							}}
 						/>
 					</Scenes>

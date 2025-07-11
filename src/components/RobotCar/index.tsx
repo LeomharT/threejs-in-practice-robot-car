@@ -24,7 +24,7 @@ import {
 } from 'three';
 import type { GLTF } from 'three-stdlib';
 import { _Controls } from '../../app/keyboard';
-import useRosMapStore from '../../hooks/useRosMapStore';
+import { useRosMapStore } from '../../hooks/useRosMapStore';
 import type { RobotCarProps } from './type';
 
 type GLTFResult = GLTF & {
@@ -84,7 +84,7 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 
 		const { scene } = useThree();
 
-		const [, set, get] = useRosMapStore();
+		const { parking, pick, begin, dispatch } = useRosMapStore((state) => state);
 
 		const raycaster = useRef(new Raycaster());
 
@@ -133,20 +133,20 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 
 			const intersect = raycaster.current.intersectObject(scene);
 
-			const parking = !!intersect.filter((item) => item.object.name === 'P地面')
+			const isParking = !!intersect.filter((obj) => obj.object.name === 'P地面')
 				.length;
 
-			const begin = !!intersect.filter((item) => item.object.name === 'Begin_G')
+			const isBegin = !!intersect.filter((obj) => obj.object.name === 'Begin_G')
 				.length;
 
-			const pick = !!intersect.filter((item) => item.object.name === 'Pick_G')
+			const isPick = !!intersect.filter((obj) => obj.object.name === 'Pick_G')
 				.length;
 
-			if (parking !== get('parking')) set('parking', parking);
+			if (isParking !== parking) dispatch('parking', isParking);
 
-			if (begin !== get('begin')) set('begin', begin);
+			if (isBegin !== begin) dispatch('begin', isBegin);
 
-			if (pick !== get('pick')) set('pick', pick);
+			if (isPick !== pick) dispatch('pick', isPick);
 		}
 
 		const { angvel, speed } = useControls('🚘 Robot Car', {

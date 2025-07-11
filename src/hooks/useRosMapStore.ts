@@ -1,25 +1,21 @@
-import { rosMapStore, type RosMapStore } from '../app/contex';
-import type { Listener } from '../utils/signalStore';
+import { create } from 'zustand';
 
-export default function useRosMapStore<K extends keyof RosMapStore>(
-	sel: (state: RosMapStore) => RosMapStore[K]
-): RosMapStore[K];
+type RosMapStore = {
+	parking: boolean;
+	begin: boolean;
+	pick: boolean;
+	lift: boolean;
+	fall: boolean;
+	dispatch: (key: keyof RosMapStore, payload: boolean) => void;
+};
 
-export default function useRosMapStore(): [
-	<K extends keyof RosMapStore>(
-		key: K,
-		cb: Listener<RosMapStore[K]>
-	) => () => void,
-	<K extends keyof RosMapStore>(key: K, val: RosMapStore[K]) => void,
-	<K extends keyof RosMapStore>(key: K) => RosMapStore[K]
-];
-
-export default function useRosMapStore<K extends keyof RosMapStore>(
-	sel?: (state: RosMapStore) => RosMapStore[K]
-) {
-	const { state, subscribe, set, get } = rosMapStore;
-
-	if (sel) return sel(state);
-
-	return [subscribe, set, get] as const;
-}
+export const useRosMapStore = create<RosMapStore>((set) => ({
+	parking: false,
+	begin: false,
+	pick: false,
+	lift: false,
+	fall: false,
+	dispatch: (key: keyof RosMapStore, payload: boolean) => {
+		set((state: RosMapStore) => ({ ...state, [key]: payload }));
+	},
+}));

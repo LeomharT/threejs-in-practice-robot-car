@@ -61,7 +61,7 @@ export default function NavigationMesh() {
 		Navigation_Eable: true,
 		Move: button(() => {
 			if (!pointsRef.current?.length || !pointsRef.current) {
-				messageApi.current?.error('No Path Find');
+				messageApi.current?.error('Path Not Find');
 				return;
 			}
 			let progress = 0;

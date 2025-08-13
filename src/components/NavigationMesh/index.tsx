@@ -72,6 +72,8 @@ export default function NavigationMesh() {
 				new BoxGeometry(1, 1, 1),
 				new MeshBasicMaterial({
 					color: 'red',
+					transparent: true,
+					opacity: 0,
 				})
 			);
 			scene.add(box);

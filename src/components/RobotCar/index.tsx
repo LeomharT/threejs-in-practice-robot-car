@@ -1,6 +1,7 @@
 import { useGLTF, useKeyboardControls } from '@react-three/drei';
 import { useFrame, useThree, type ObjectMap } from '@react-three/fiber';
 import { RapierRigidBody, RigidBody } from '@react-three/rapier';
+import gsap from 'gsap';
 import { button, useControls } from 'leva';
 import {
 	forwardRef,
@@ -13,6 +14,7 @@ import {
 } from 'react';
 import {
 	BoxGeometry,
+	Euler,
 	Group,
 	Mesh,
 	MeshBasicMaterial,
@@ -92,6 +94,8 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 
 		const wheels = useRef<JSX.IntrinsicElements['group']>(null);
 
+		const roborArm = useRef<Mesh[]>([]);
+
 		const box = useRef(
 			new Mesh(
 				new BoxGeometry(1, 1, 1),
@@ -147,6 +151,30 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 			if (isBegin !== begin) dispatch('begin', isBegin);
 
 			if (isPick !== pick) dispatch('pick', isPick);
+		}
+
+		function moveArm() {
+			const timeline = gsap.timeline();
+			timeline.to(roborArm.current[0]?.rotation as Euler, {
+				y: Math.PI,
+				ease: 'power2',
+			});
+			timeline.to(roborArm.current[1]?.rotation as Euler, {
+				x: Math.PI / 8,
+				ease: 'power2',
+			});
+			timeline.to(roborArm.current[2]?.rotation as Euler, {
+				x: Math.PI / 8,
+				ease: 'power2',
+			});
+			timeline.to(roborArm.current[3]?.rotation as Euler, {
+				x: -Math.PI / 4,
+				ease: 'power2',
+			});
+
+			timeline.duration(4.0);
+
+			timeline.play();
 		}
 
 		const { angvel, speed } = useControls('🚘 Robot Car', {
@@ -264,7 +292,10 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 
 		return (
 			<RigidBody
-				ref={carRigidBody}
+				ref={(ref) => {
+					carRigidBody.current = ref;
+					(carRigidBody.current!.userData as any) = { moveArm };
+				}}
 				gravityScale={2.5}
 				type='dynamic'
 				restitution={0.25}
@@ -426,6 +457,7 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 						/>
 					</group>
 					<mesh
+						ref={(ref: Mesh) => (roborArm.current[0] = ref)}
 						name='部件6'
 						castShadow
 						receiveShadow
@@ -434,6 +466,7 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 						position={[-0.187, 2.121, 0.007]}
 					>
 						<mesh
+							ref={(ref: Mesh) => (roborArm.current[1] = ref)}
 							name='部件5'
 							castShadow
 							receiveShadow
@@ -442,6 +475,7 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 							position={[0.342, 0.586, 0]}
 						>
 							<mesh
+								ref={(ref: Mesh) => (roborArm.current[2] = ref)}
 								name='部件4'
 								castShadow
 								receiveShadow
@@ -450,6 +484,7 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 								position={[-0.461, 0.811, 0]}
 							>
 								<mesh
+									ref={(ref: Mesh) => (roborArm.current[3] = ref)}
 									name='部件3'
 									castShadow
 									receiveShadow
@@ -458,6 +493,7 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 									position={[0.009, 0.667, -0.008]}
 								>
 									<group
+										ref={(ref: Mesh) => (roborArm.current[4] = ref)}
 										name='部件2'
 										position={[0.802, 0.335, 0.008]}
 										rotation={[Math.PI / 2, 0, 0]}
@@ -477,6 +513,7 @@ const RobotCars = forwardRef<RefObject<RapierRigidBody | null>>(
 											material={materials.金属黑}
 										/>
 										<mesh
+											ref={(ref: Mesh) => (roborArm.current[5] = ref)}
 											name='部件1'
 											castShadow
 											receiveShadow

@@ -6,6 +6,7 @@ import { suspend } from 'suspend-react';
 import { DoubleSide, MeshStandardMaterial, Vector3 } from 'three';
 import { _Controls } from '../../app/keyboard';
 import { useRosMapStore } from '../../hooks/useRosMapStore';
+import useScene from '../../hooks/useScene';
 import BarrierBorder from '../BarrierBorder';
 import MessageApi from '../MessageApi';
 const medium = import('@pmndrs/assets/fonts/inter_medium.woff');
@@ -21,6 +22,8 @@ export default function PickAppleSpot(props: JSX.IntrinsicElements['group']) {
 	const enterKeyPress = useKeyboardControls((state) => state[_Controls.enter]);
 
 	const { pick, dispatch } = useRosMapStore((state) => state);
+
+	const { car } = useScene();
 
 	function pickAppleBarrierUp() {
 		gsap
@@ -58,13 +61,15 @@ export default function PickAppleSpot(props: JSX.IntrinsicElements['group']) {
 				duration: 2000,
 			});
 
+			(car?.current?.userData as any).moveArm();
+
 			setTimeout(() => {
 				messageApi.current?.success({
 					key: KEY,
 					content: '🎉🎉🎉Success🎉🎉🎉',
 				});
 				dispatch('fall', true);
-			}, 2000);
+			}, 4500);
 		}
 
 		if (pick) pickAppleBarrierUp();
